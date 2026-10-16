@@ -59,9 +59,17 @@ export const Services = () => (
         <p className="mt-4 text-slate-500">Ofrezco edición profesional adaptada a tus necesidades: redes sociales, YouTube o promoción de tu negocio. Me enfoco en calidad, creatividad y entrega a tiempo.</p>
         <a href="#contacto" className="btn-primary mt-6">Ver servicios <ArrowRight size={16} /></a>
       </Reveal>
-      <ul className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+      <ul className="grid auto-rows-fr gap-4 sm:grid-cols-2 md:grid-cols-3">
         {services.map(({ icon: I, t, d }, i) => (
-          <li key={t}><Reveal dir="zoom" delay={i * 90}><article className="card bg-navy h-full"><I className="mb-3 text-brand" /><h3 className="font-semibold text-white">{t}</h3><p className="text-sm text-slate-400">{d}</p></article></Reveal></li>
+          <li key={t} className="h-full min-w-0">
+            <Reveal dir="zoom" delay={i * 90} className="h-full">
+              <article className="card flex h-full min-h-[11rem] flex-col bg-navy">
+                <I className="mb-3 shrink-0 text-brand" />
+                <h3 className="font-semibold text-white">{t}</h3>
+                <p className="text-sm text-slate-400">{d}</p>
+              </article>
+            </Reveal>
+          </li>
         ))}
       </ul>
     </div>
@@ -103,14 +111,20 @@ export const About = () => (
     <div className="wrap grid items-stretch gap-1 lg:gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
       <Reveal dir="right" className="relative h-full">
         {/* En móvil la imagen mantiene su proporción; a partir de lg su alto lo marca la columna de la derecha */}
-        <div className="relative aspect-[4/4.2] w-full overflow-hidden rounded-2xl lg:aspect-auto lg:h-full">
-          <img src="/images/about2.webp" alt="Retrato en blanco y negro del editor de video y creador audiovisual" width={933} height={1400} loading="lazy" className="absolute inset-0 h-[90%] lg:h-full w-[90%] lg:w-full object-cover lg:object-contain object-[50%_28%] grayscale-[0.2]" />
+        <div className="relative isolate aspect-[4/4.2] w-full overflow-hidden lg:aspect-auto lg:h-full [mask-image:radial-gradient(ellipse_65%_65%_at_50%_40%,black_50%,transparent_100%)]">
+          {/* El aura llega a transparencia total arriba para evitar el corte del contenedor. */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_14%)]">
+            <div className="absolute bottom-0 left-1/2 h-[85%] w-[85%] -translate-x-1/2 scale-[1.08] opacity-70 blur-2xl  md:h-full md:w-full">
+              <div className="absolute inset-0 bg-slate-300 [mask-image:url('/images/about2.webp')] [mask-size:cover] [mask-position:50%_28%] [mask-repeat:no-repeat] lg:[mask-size:contain]" />
+            </div>
+          </div>
+          <img src="/images/about2.webp" alt="Retrato en blanco y negro del editor de video y creador audiovisual" width={933} height={1400} loading="lazy" className="absolute bottom-0 left-1/2 h-[85%] w-[85%] md:h-[90%] md:w-[90%] -translate-x-1/2 object-cover object-[50%_28%] grayscale-[0.2] [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)] lg:h-full lg:w-full lg:object-contain" />
         </div>
-        <p aria-hidden className="absolute lg:left-24 right-3 top-4 -rotate-6 font-script text-3xl text-brand animate-float">Edita.<br />Crea.<br />Inspira.</p>
+        <p aria-hidden className="absolute z-30 lg:left-24 right-3 top-4 -rotate-6 font-script text-3xl text-emerald-300 animate-float">Edita.<br />Crea.<br />Inspira.</p>
       </Reveal>
       <Reveal delay={150} className="flex h-full flex-col justify-between gap-8">
         <div>
-          <h2 className="text-4xl font-bold text-white">Hola, soy Alejandro Yamamoto</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mt-4 md:mt-0">Hola, soy Alejandro Yamamoto</h2>
           <p className="mt-4 text-slate-300">Soy un editor apasionado con ojo para el detalle y amor por contar historias. Ayudo a marcas, creadores y negocios a convertir sus ideas en videos que conectan con su audiencia.</p>
         </div>
         <dl className="grid grid-cols-3 gap-4 text-center">

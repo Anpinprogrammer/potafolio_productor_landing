@@ -3,7 +3,7 @@ import Header from "./components/Header";
 import WhatsAppButton from "./components/WhatsAppButton";
 import PremiumServices from "./components/PremiumServices";
 import { Hero, Services, Projects, About, Process, Testimonials, Contact, Footer } from "./components/Sections";
-import { client } from "./sanityClient";
+import { client } from "./lib/sanityClient";
 
 export default function App() {
 
