@@ -1,0 +1,25 @@
+Créditos de las imágenes de la sección "Servicios premium"
+==========================================================
+Todas son fotografías de Unsplash, descargadas y recortadas localmente
+(800x1000, webp). Licencia Unsplash: uso gratuito, incluido el comercial,
+sin necesidad de atribución. Se deja constancia por buena práctica.
+
+1-viaje.webp      "A person standing on top of a mountain at sunset"
+                  Autor: Yk K — https://unsplash.com/photos/vewxEbZv1h0
+                  https://images.unsplash.com/photo-1700933662361-abc660379e0c
+
+2-anuncios.webp   "Two people holding a professional cinema camera rig"
+                  https://unsplash.com/photos/d4bQC7yVyoE
+                  https://images.unsplash.com/photo-1761499930744-1d689014c9a6
+
+3-redes.webp      "Person locking gym plates on barbell" (entrenamiento con barra)
+                  https://unsplash.com/photos/2Aa6j9RPPlo
+                  https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5
+
+4-historia.webp   "A man holding a camera in the dark"
+                  https://unsplash.com/photos/dGG9-WwG4oo
+                  https://images.unsplash.com/photo-1739296385343-ff091bca6203
+
+Nota: los recortes se generaron con el CDN de Unsplash usando punto focal
+(fp-x / fp-y). Si quieres recolocar el encuadre de una card, cambia el campo
+`position` de esa card en src/data.ts (formato: "x% y%").
