@@ -416,11 +416,13 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
           <div className="flex w-full items-center justify-center">
             <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Video: ${playing.title}`}
               onClick={(e) => e.stopPropagation()}
-              className={`relative max-h-[calc(100svh-2rem)] w-full max-w-4xl overflow-y-auto rounded-lg outline-none sm:max-h-[calc(100svh-3rem)] landscape:max-h-[calc(100svh-1rem)] landscape:max-w-[min(56rem,calc((100svh_-_6rem)*16/9))] ${closing ? "animate-modalout" : "animate-modalin"}`}>
-              <button type="button" onClick={closeVideo} aria-label="Cerrar video"
-                className="absolute right-3 top-3 z-50 inline-flex min-h-10 min-w-10 items-center justify-center gap-1.5 rounded-full bg-black/60 p-2 text-white backdrop-blur-md transition-colors hover:bg-black/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white motion-reduce:transition-none">
-                <X size={18} aria-hidden="true" /><span className="sr-only">Cerrar</span>
-              </button>
+              className={`relative max-h-[calc(100svh-2rem)] w-full max-w-4xl overflow-y-auto rounded-lg outline-none sm:max-h-[calc(100svh-3rem)] landscape:max-h-[calc(100svh-1rem)] landscape:max-w-[min(56rem,calc((100svh_-_8rem)*16/9))] ${closing ? "animate-modalout" : "animate-modalin"}`}>
+              <div className="mb-2 flex justify-end">
+                <button type="button" onClick={closeVideo} aria-label="Cerrar video"
+                  className="relative z-50 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full bg-black/60 px-3 py-2 text-sm text-white backdrop-blur-md transition-colors hover:bg-black/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white motion-reduce:transition-none">
+                  <X size={18} aria-hidden="true" />Cerrar
+                </button>
+              </div>
               <div className="relative aspect-video h-auto max-h-[80vh] w-full overflow-hidden rounded-lg bg-black ring-1 ring-white/15 sm:max-h-[85vh]"
                 style={{ boxShadow: `0 0 0 1px ${rgba(playing.accent, 0.35)}, 0 40px 120px -40px ${rgba(playing.accent, 0.55)}` }}>
                 <VideoOpening key={playing.id} poster={playing.poster} title={playing.title}
