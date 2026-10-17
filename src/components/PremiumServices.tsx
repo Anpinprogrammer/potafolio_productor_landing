@@ -231,7 +231,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
 
   return (
     <section id="portafolio" aria-label={collection === "all" ? "Todos los proyectos del portafolio" : "Proyectos destacados"} aria-busy={loading}
-      className={`relative overflow-hidden ${collection === "all" ? "pb-20 pt-8" : "bg-[#0A0A0C] pb-12 pt-28 lg:pb-20"}`}>
+      className={`relative overflow-hidden ${collection === "all" ? "pb-20 pt-8" : "bg-[#0A0A0C] py-12 lg:py-20"}`}>
       {collection === "featured" && <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />}
       {collection === "featured" && <div aria-hidden="true" className="pointer-events-none absolute -top-10 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-brand/[0.15] blur-[120px]" />}
       {/* Ambiente: halos de color + grano */}

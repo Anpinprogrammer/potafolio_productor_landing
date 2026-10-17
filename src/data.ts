@@ -20,7 +20,14 @@ export const steps = [
   { icon: Scissors, t: "Edición y revisiones", d: "Creo el borrador y aplico tus cambios." },
   { icon: Rocket, t: "Entrega final", d: "Recibes tu video listo y a tiempo." },
 ];
-export const reviews = [
+export type Review = {
+  n: string;
+  r: string;
+  q: string;
+  avatar?: string;
+};
+
+export const reviews: Review[] = [
   { n: "Sarah Khan", r: "Creadora de contenido", q: "¡Increíble trabajo! Las ediciones fueron creativas y llegaron a tiempo." },
   { n: "Ali Raza", r: "Dueño de negocio", q: "Muy profesional y fácil de trabajar. Entendió mi visión a la perfección." },
   { n: "Zainab Malik", r: "YouTuber", q: "Gran comunicación y calidad de primer nivel. Volveré a contratarlo." },

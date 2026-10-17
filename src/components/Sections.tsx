@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Play, Zap, ShieldCheck, MessageCircle, Mail, Star, Quote, Clapperboard } from "lucide-react";
+import { ArrowRight, Play, Zap, ShieldCheck, MessageCircle, Mail, Clapperboard } from "lucide-react";
 import Reveal from "./Reveal";
 import SectionBadge from "./SectionBadge";
+import WhatsAppIcon from "./WhatsAppIcon";
+import TestimonialsCarousel from "./TestimonialsCarousel";
 import ToolsMarquee from "./ToolsMarquee";
-import { projects, steps, reviews } from "../data";
+import { projects, steps } from "../data";
 import { useServices } from "../lib/useServices";
 import { getServiceIcon } from "../lib/serviceIcons";
 import { formatServiceTitle, type Service } from "../lib/services";
@@ -43,7 +45,10 @@ export const Hero = () => {
       <div className="max-w-xl lg:max-w-3xl flex flex-col max-sm:w-full max-sm:justify-between">
         <div>
 
-          <SectionBadge text="Hola, soy un profesional en" theme="dark" className="mb-4 animate-rise" />
+          <p className="mb-4 flex animate-rise items-center gap-2.5 text-sm font-medium tracking-wide text-zinc-400">
+            <span aria-hidden="true" className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-brand motion-reduce:animate-none" />
+            Hola, soy profesional en
+          </p>
           <h1 className="animate-rise text-3xl font-bold lg:font-extrabold leading-tight text-white [animation-delay:.15s] md:text-6xl">
             Edición de video <span className="block text-3xl font-extrabold md:text-6xl">que convierte ideas en <span className="font-script text-5xl font-semibold text-brand drop-shadow-[0_0_12px_rgba(20,107,58,0.8)] md:text-6xl">historias</span></span>
           </h1>
@@ -240,29 +245,36 @@ export const Testimonials = () => (
       <Reveal dir="left">
       <SectionBadge text="Reseñas" theme="dark" className="mb-4" />
       <h2 className="text-3xl md:text-4xl font-bold text-white">Lo que dicen mis clientes</h2><p className="mt-2 text-slate-400">Personas reales. Proyectos reales. Resultados reales.</p></Reveal>
-      <ul className="grid gap-4 md:grid-cols-3">
-        {reviews.map((r, i) => (
-          <li key={r.n}><Reveal delay={i * 150} className="h-full"><figure className="card h-full"><Quote className="text-brand" size={18} />
-            <blockquote className="mt-2 text-sm text-slate-300">{r.q}</blockquote>
-            <figcaption className="mt-4 flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand/30 font-bold text-white">{r.n[0]}</span>
-              <span className="text-sm"><b className="block text-white">{r.n}</b><span className="text-slate-400">{r.r}</span>
-              <span className="flex text-amber-400" aria-label="5 de 5 estrellas">{Array.from({ length: 5 }, (_, k) => <Star key={k} size={12} fill="currentColor" />)}</span></span></figcaption></figure></Reveal></li>
-        ))}
-      </ul>
+      <TestimonialsCarousel />
     </div>
   </section>
 );
 
 export const Contact = () => (
-  <section id="contacto" className="bg-white py-12 lg:py-20 text-slate-800">
-    <Reveal className="wrap grid items-center gap-8 lg:grid-cols-[1.2fr_1fr_1fr_auto]">
-      <div>
+  <section id="contacto" aria-labelledby="contacto-title" className="bg-white py-12 text-slate-800 lg:py-16">
+    <Reveal className="wrap grid grid-cols-1 items-center gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
+      <div className="min-w-0">
         <SectionBadge text="Mi contacto" theme="light" className="mb-4" />
-        <h2 className="text-3xl md:text-4xl font-bold text-ink">¿Listo para trabajar juntos?</h2><p className="mt-2 text-slate-600">¿Tienes un proyecto en mente? Hablemos y convirtamos tus ideas en videos increíbles.</p></div>
-      <a href="mailto:pixelframe@gmail.com" className="flex items-center gap-3 text-slate-800 hover:text-brand"><Mail className="text-brand" /><span>{EMAIL}<small className="block text-slate-500">Respuesta en 24 horas</small></span></a>
-      <a href={`https://wa.me/${PHONE}?text=${encodeURIComponent(MESSAGE)}`} className="flex items-center gap-3 text-slate-800 hover:text-brand"><MessageCircle className="text-brand" /><span>{formatearTelefono(PHONE)}<small className="block text-slate-500">Disponible en WhatsApp</small></span></a>
-      <div className="flex justify-center">
-        <a href={`mailto:${EMAIL}`} className="btn-primary justify-center">Contáctame <ArrowRight size={16} /></a>
+        <h2 id="contacto-title" className="text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl">¿Listo para trabajar juntos?</h2>
+        <p className="mt-3 max-w-lg leading-relaxed text-zinc-600">¿Tienes un proyecto en mente? Hablemos y convirtamos tus ideas en videos increíbles.</p>
+        <a href={`https://wa.me/${PHONE}?text=${encodeURIComponent("Hola, me gustaría agendar una llamada y cotizar mi proyecto de edición de video.")}`} target="_blank" rel="noopener noreferrer" className="btn-primary group mt-6 w-full justify-center text-center sm:w-auto">
+          Agendar una llamada / Cotizar
+          <ArrowRight size={16} aria-hidden="true" className="shrink-0 transition-transform group-hover:translate-x-1 motion-reduce:transform-none" />
+        </a>
+      </div>
+      <div className="grid min-w-0 grid-cols-1 auto-rows-fr gap-4 sm:grid-cols-2">
+        <a href={`mailto:${EMAIL}`} className="group flex min-w-0 flex-col items-start rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-md focus-visible:border-emerald-500/50 motion-reduce:transform-none motion-reduce:transition-none">
+          <span className="mb-4 grid h-10 w-10 place-items-center rounded-xl bg-brand/10 text-brand"><Mail size={22} aria-hidden="true" /></span>
+          <span className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500">Email</span>
+          <span className="w-full break-words text-sm font-semibold text-zinc-900 transition-colors group-hover:text-brand">{EMAIL}</span>
+          <span className="mt-auto pt-2 text-xs leading-relaxed text-zinc-500">Respuesta en menos de 24h</span>
+        </a>
+        <a href={`https://wa.me/${PHONE}?text=${encodeURIComponent(MESSAGE)}`} target="_blank" rel="noopener noreferrer" className="group flex min-w-0 flex-col items-start rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-md focus-visible:border-emerald-500/50 motion-reduce:transform-none motion-reduce:transition-none">
+          <span className="mb-4 grid h-10 w-10 place-items-center rounded-xl bg-brand/10 text-brand"><WhatsAppIcon className="h-[22px] w-[22px]" /></span>
+          <span className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500">WhatsApp</span>
+          <span className="text-sm font-semibold text-zinc-900 transition-colors group-hover:text-brand">{formatearTelefono(PHONE)}</span>
+          <span className="mt-auto pt-2 text-xs leading-relaxed text-zinc-500">Atención directa por chat</span>
+        </a>
       </div>
     </Reveal>
   </section>
