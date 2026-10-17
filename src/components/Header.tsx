@@ -118,14 +118,14 @@ export default function Header({ logoRef, hideLogo = false }: { logoRef?: Ref<HT
               {nav.map(([l, h], i) => (
                 <li key={h} className="animate-modalin" style={{ animationDelay: `${0.05 * i}s` }}>
                   <Link to={!isHome && h === "#portafolio" ? "/proyectos" : `/${h}`} aria-current={activeSection === h ? "location" : undefined} onClick={() => setOpen(false)}
-                    className="text-3xl font-extrabold tracking-tight text-white transition duration-300 hover:text-brand active:text-brand">
+                    className="text-2xl font-extrabold tracking-tight text-white transition duration-300 hover:text-brand active:text-brand">
                     {l}
                   </Link>
                 </li>
               ))}
             </ul>
             <Link to="/#contacto" onClick={() => setOpen(false)}
-              className="btn-primary animate-modalin" style={{ animationDelay: `${0.05 * nav.length}s` }}>
+              className="btn-primary animate-modalin text-xl" style={{ animationDelay: `${0.05 * nav.length}s` }}>
               Trabajemos juntos
             </Link>
           </div>
