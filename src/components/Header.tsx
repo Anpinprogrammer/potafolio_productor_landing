@@ -125,7 +125,7 @@ export default function Header({ logoRef, hideLogo = false }: { logoRef?: Ref<HT
               ))}
             </ul>
             <Link to="/#contacto" onClick={() => setOpen(false)}
-              className="btn-primary animate-modalin text-xl" style={{ animationDelay: `${0.05 * nav.length}s` }}>
+              className="btn-primary animate-modalin text-lg" style={{ animationDelay: `${0.05 * nav.length}s` }}>
               Trabajemos juntos
             </Link>
           </div>

@@ -87,7 +87,7 @@ export default function YouTubeEmbed({ src, title, onReveal, onError, startMuted
     iframe.title = title;
     iframe.width = "100%";
     iframe.height = "100%";
-    iframe.className = "absolute inset-0 h-full w-full border-0";
+    iframe.className = "absolute inset-0 h-full w-full rounded-lg border-0";
     iframe.referrerPolicy = "strict-origin-when-cross-origin";
     iframe.allow = "autoplay; fullscreen; encrypted-media; picture-in-picture";
     iframe.allowFullscreen = true;

@@ -122,7 +122,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
   const locked = useRef(false);
   const queued = useRef(0);
   const [dragOffset, setDragOffset] = useState(0);
-  const trackRef = useRef<HTMLUListElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const gesture = useRef<{
     pointerId: number; x: number; y: number; offset: number; axis: "horizontal" | "vertical" | null;
   } | null>(null);
@@ -161,14 +161,14 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
     window.setTimeout(settle, ms + 20);
   };
 
-  const startDrag = (event: PointerEvent<HTMLUListElement>) => {
+  const startDrag = (event: PointerEvent<HTMLDivElement>) => {
     if (!carousel || n < 2 || !event.isPrimary || event.button !== 0 || gesture.current) return;
     suppressClick.current = false;
     if (locked.current) return;
     gesture.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, offset: 0, axis: null };
   };
 
-  const updateDrag = (event: PointerEvent<HTMLUListElement>) => {
+  const updateDrag = (event: PointerEvent<HTMLDivElement>) => {
     const current = gesture.current;
     if (!current || current.pointerId !== event.pointerId) return;
     const dx = event.clientX - current.x;
@@ -190,7 +190,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
     setDragOffset(current.offset);
   };
 
-  const finishDrag = (event: PointerEvent<HTMLUListElement>) => {
+  const finishDrag = (event: PointerEvent<HTMLDivElement>) => {
     const current = gesture.current;
     if (!current || current.pointerId !== event.pointerId) return;
     gesture.current = null;
@@ -210,8 +210,8 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
   }, [carousel]);
 
   useEffect(() => {
-    const track = trackRef.current;
-    if (!carousel || n < 2 || !track) return;
+    const viewport = viewportRef.current;
+    if (!carousel || n < 2 || !viewport) return;
     // React usa listeners touch pasivos: el listener nativo permite frenar el
     // scroll de la página solo cuando el usuario está arrastrando horizontalmente.
     const preventHorizontalScroll = (event: TouchEvent) => {
@@ -223,8 +223,8 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
       if (event.cancelable && (current.axis === "horizontal" ||
         (!current.axis && dx >= 8 && dx >= dy * 0.8))) event.preventDefault();
     };
-    track.addEventListener("touchmove", preventHorizontalScroll, { passive: false });
-    return () => track.removeEventListener("touchmove", preventHorizontalScroll);
+    viewport.addEventListener("touchmove", preventHorizontalScroll, { passive: false });
+    return () => viewport.removeEventListener("touchmove", preventHorizontalScroll);
   }, [carousel, n]);
 
   const active = n > 1 ? ((pos - 1) % n + n) % n : 0;
@@ -339,9 +339,8 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
               {error && !loading && <button type="button" onClick={onRetry} className="btn-ghost">Volver a intentar</button>}
             </div>
           )}
-          <div className={collection === "all" ? "relative" : "relative mx-auto max-w-[27rem] overflow-hidden sm:max-w-none sm:overflow-visible"}>
-            <ul
-              ref={trackRef}
+          <div
+              ref={viewportRef}
               onPointerDown={startDrag}
               onPointerMove={updateDrag}
               onPointerUp={finishDrag}
@@ -359,6 +358,8 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
                   event.stopPropagation();
                 }
               }}
+              className={collection === "all" ? "relative" : "relative mx-auto max-w-[27rem] overflow-hidden sm:max-w-none sm:overflow-visible"}>
+            <ul
               className={collection === "all" ? "grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3" : carousel ? "flex" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"}
               style={carousel && n > 1 ? {
                 userSelect: "none",
@@ -410,13 +411,17 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
       {/* Ventana de reproducción: centrada, por encima de todo (z-100 > header z-50) */}
       {playing?.video && createPortal(
         <div onClick={closeVideo}
-          className={`fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-4 backdrop-blur-md sm:p-6 ${closing ? "pointer-events-none animate-fadeout" : "animate-fadein"}`}>
+          className={`fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/85 p-4 backdrop-blur-md sm:p-6 landscape:p-2 ${closing ? "pointer-events-none animate-fadeout" : "animate-fadein"}`}>
           {/* El reproductor se adapta al ancho disponible y conserva la orientación del dispositivo. */}
           <div className="flex w-full items-center justify-center">
             <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Video: ${playing.title}`}
               onClick={(e) => e.stopPropagation()}
-              className={`relative w-full max-w-4xl transform-gpu outline-none ${closing ? "animate-modalout" : "animate-modalin"}`}>
-              <div className="relative aspect-video max-h-[70svh] overflow-hidden rounded-2xl bg-black ring-1 ring-white/15"
+              className={`relative max-h-[calc(100svh-2rem)] w-full max-w-4xl overflow-y-auto rounded-lg outline-none sm:max-h-[calc(100svh-3rem)] landscape:max-h-[calc(100svh-1rem)] landscape:max-w-[min(56rem,calc((100svh_-_6rem)*16/9))] ${closing ? "animate-modalout" : "animate-modalin"}`}>
+              <button type="button" onClick={closeVideo} aria-label="Cerrar video"
+                className="absolute right-3 top-3 z-50 inline-flex min-h-10 min-w-10 items-center justify-center gap-1.5 rounded-full bg-black/60 p-2 text-white backdrop-blur-md transition-colors hover:bg-black/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white motion-reduce:transition-none">
+                <X size={18} aria-hidden="true" /><span className="sr-only">Cerrar</span>
+              </button>
+              <div className="relative aspect-video h-auto max-h-[80vh] w-full overflow-hidden rounded-lg bg-black ring-1 ring-white/15 sm:max-h-[85vh]"
                 style={{ boxShadow: `0 0 0 1px ${rgba(playing.accent, 0.35)}, 0 40px 120px -40px ${rgba(playing.accent, 0.55)}` }}>
                 <VideoOpening key={playing.id} poster={playing.poster} title={playing.title}
                   category={playing.category} accent={playing.accent} grain={GRAIN}
@@ -430,30 +435,26 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
                     allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowFullScreen
                     referrerPolicy="strict-origin-when-cross-origin"
                     onLoad={() => setVideoReady(true)} onError={() => { setVideoReady(true); setVideoError(true); }}
-                    className="absolute inset-0 h-full w-full border-0" />
+                    className="absolute inset-0 h-full w-full rounded-lg border-0" />
                 ) : (
                   <video key={playing.video.url} ref={videoRef} src={playing.video.url} poster={playing.poster ?? undefined} controls autoPlay muted={startMuted} playsInline preload="metadata"
                     onLoadedData={() => setVideoReady(true)} onCanPlay={() => setVideoReady(true)} onPlaying={() => setVideoReady(true)}
                     onError={() => { setVideoReady(true); setVideoError(true); }}
-                    className="absolute inset-0 h-full w-full bg-black object-contain" />
+                    className="absolute inset-0 h-full w-full rounded-lg bg-black object-contain" />
                 )}
                 {videoError && <div role="alert" className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/90 p-6 text-center text-sm text-white">
                   <p>No pudimos reproducir este video.</p>
                   <a href={playing.video.originalUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Abrir el video</a>
                 </div>}
               </div>
-              <div className="mt-3 flex items-start justify-between gap-4">
-                <div className="text-sm leading-tight">
-                  <p><span className="font-semibold text-white">{playing.title}</span>
+              <div className="mt-3 px-1 pb-1 landscape:mt-2">
+                <div className="text-sm leading-tight landscape:flex landscape:flex-wrap landscape:items-center landscape:gap-x-3 landscape:gap-y-1 landscape:text-xs">
+                  <p className="min-w-0 break-words"><span className="font-semibold text-white">{playing.title}</span>
                   <span aria-hidden className="mx-2 text-white/30">·</span>
                   <span className="text-[10px] uppercase tracking-[0.18em] text-white/60">{playing.category}</span></p>
-                  {playing.video.provider && <a href={playing.video.originalUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs text-white/70 underline underline-offset-4 hover:text-white">Ver en {playing.video.provider}</a>}
-                  {startMuted && <p className="mt-2 text-xs leading-relaxed text-white/60">El video inicia sin sonido. Actívalo en los controles del reproductor.</p>}
+                  {playing.video.provider && <a href={playing.video.originalUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs text-white/70 underline underline-offset-4 hover:text-white landscape:mt-0">Ver en {playing.video.provider}</a>}
+                  {startMuted && <p className="mt-2 text-xs leading-relaxed text-white/60 landscape:mt-0">El video inicia sin sonido. Actívalo en los controles del reproductor.</p>}
                 </div>
-                <button type="button" onClick={closeVideo}
-                  className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold text-white transition duration-300 hover:bg-white/10 motion-reduce:transition-none">
-                  <X size={14} aria-hidden /> Cerrar
-                </button>
               </div>
             </div>
           </div>
