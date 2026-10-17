@@ -38,7 +38,7 @@ export const Hero = () => {
       className={`hero-image ${imageReady ? "hero-image--ready" : ""} absolute inset-y-0 right-0 h-full w-full object-cover object-[60%_45%] md:w-3/5 [mask-image:linear-gradient(to_left,black_55%,transparent)]`} />
     <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-transparent" />
     <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-ink to-transparent max-[1800px]:hidden" />
-    <div className="wrap relative my-auto w-full text-slate-50 max-sm:my-0 max-sm:flex max-sm:flex-1 max-sm:py-6 sm:py-14 md:py-16">
+    <div className="wrap relative z-10 my-auto w-full text-slate-50 max-sm:my-0 max-sm:flex max-sm:flex-1 max-sm:py-6 sm:py-14 md:py-16">
       <div className="max-w-xl lg:max-w-3xl flex flex-col max-sm:w-full max-sm:justify-between">
         <div>
 
@@ -69,8 +69,10 @@ export const Hero = () => {
     </div>
     {/** 
     <ToolsMarquee />*/}
-    <p aria-hidden className="absolute bottom-16 right-16 hidden -rotate-6 animate-loadThenFloat font-script text-4xl text-brand/90 lg:block">Mejores videos,<br />mayor impacto</p>
-  </div></section>
+    <p aria-hidden className="absolute bottom-16 right-16 z-10 hidden -rotate-6 animate-loadThenFloat font-script text-4xl text-brand/90 lg:block">Mejores videos,<br />mayor impacto</p>
+  </div>
+  <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(to_bottom,transparent_0%,#0b2417_100%)] md:h-56" />
+  </section>
   );
 };
 

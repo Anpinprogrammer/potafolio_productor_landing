@@ -231,10 +231,10 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
   return (
     <section id="portafolio" aria-label={collection === "all" ? "Todos los proyectos del portafolio" : "Proyectos destacados"} aria-busy={loading}
       className={`relative overflow-hidden ${collection === "all" ? "pb-20 pt-8" : "py-12 lg:py-20"}`}
-      style={collection === "featured" ? { background: "radial-gradient(130% 100% at 50% 0%, #0b2417 0%, #07190f 55%, #041009 90%, #010204 100%)" } : undefined}>
+      style={collection === "featured" ? { background: "linear-gradient(to bottom, #0b2417 0%, #07190f 55%, #041009 90%, #010204 100%)" } : undefined}>
       {/* Ambiente: halos de color + grano */}
       <div aria-hidden className="pointer-events-none absolute inset-0"
-        style={collection === "all" ? { maskImage: "linear-gradient(to bottom, transparent 0%, black 160px)" } : undefined}>
+        style={{ maskImage: "linear-gradient(to bottom, transparent 0%, black 160px)" }}>
         <div className="absolute -top-40 left-1/2 h-[540px] w-[900px] -translate-x-1/2 rounded-full bg-brand/25 blur-[140px]" />
         <div className="absolute -bottom-32 -right-24 h-[420px] w-[560px] rounded-full bg-brand2/40 blur-[130px]" />
         <div className="absolute inset-0 opacity-[0.05] mix-blend-soft-light" style={{ backgroundImage: GRAIN }} />
