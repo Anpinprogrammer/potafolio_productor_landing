@@ -3,6 +3,7 @@ import { createPortal, flushSync } from "react-dom";
 import { Link } from "react-router-dom";
 import { ArrowRight, ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 import Reveal from "./Reveal";
+import SectionBadge from "./SectionBadge";
 import YouTubeEmbed from "./YouTubeEmbed";
 import VideoOpening from "./VideoOpening";
 import { premiumServices } from "../data";
@@ -245,10 +246,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
         {/* Cabecera editorial */}
         {collection === "featured" && <div className="flex flex-col gap-8 border-b border-white/10 pb-9 lg:flex-row lg:items-end lg:justify-between">
           <Reveal className="max-w-2xl">
-            <p className="inline-flex w-fit items-center gap-2.5 rounded-full border border-zinc-800 bg-zinc-900/80 px-4 py-2 text-xs font-medium uppercase tracking-wider text-zinc-400 backdrop-blur-md">
-              <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-              Proyectos destacados
-            </p>
+            <SectionBadge text="Proyectos destacados" theme="dark" />
             <h2 className="mt-4 text-3xl md:text-4xl font-extrabold leading-[1.06] text-white lg:text-5xl">
               Cada proyecto, <span className="font-script text-[2.38rem] font-normal text-brand drop-shadow-[0_0_10px_rgba(20,107,58,0.4)] md:text-[3.4rem]">una película</span>
             </h2>

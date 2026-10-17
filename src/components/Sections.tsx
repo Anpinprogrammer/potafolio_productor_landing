@@ -43,10 +43,7 @@ export const Hero = () => {
       <div className="max-w-xl lg:max-w-3xl flex flex-col max-sm:w-full max-sm:justify-between">
         <div>
 
-          <p className="mb-4 inline-flex w-fit animate-rise items-center gap-2.5 rounded-full border border-zinc-800 bg-zinc-900/80 px-4 py-2 text-xs font-medium uppercase tracking-wider text-zinc-300 backdrop-blur-md">
-            <span aria-hidden="true" className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-brand motion-reduce:animate-none" />
-            Hola, soy un profesional en
-          </p>
+          <SectionBadge text="Hola, soy un profesional en" theme="dark" className="mb-4 animate-rise" />
           <h1 className="animate-rise text-3xl font-bold lg:font-extrabold leading-tight text-white [animation-delay:.15s] md:text-6xl">
             Edición de video <span className="block text-3xl font-extrabold md:text-6xl">que convierte ideas en <span className="font-script text-5xl font-semibold text-brand drop-shadow-[0_0_12px_rgba(20,107,58,0.8)] md:text-6xl">historias</span></span>
           </h1>
@@ -99,7 +96,7 @@ export const Services = () => {
     <section id="servicios" aria-labelledby="servicios-title" aria-busy={loading} className="bg-white py-16 lg:py-24">
       <div className="wrap grid w-full items-center gap-10 lg:grid-cols-12 lg:gap-8 xl:gap-12">
         <Reveal dir="left" className="min-w-0 lg:col-span-4">
-          <SectionBadge light className="mb-5">Mis servicios</SectionBadge>
+          <SectionBadge text="Mis servicios" theme="light" className="mb-5" />
           <h2 id="servicios-title" className="text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl">Servicios de edición de video</h2>
           <p className="mt-5 text-lg font-medium leading-relaxed text-zinc-800">Cortes limpios. Imágenes que enganchan. Resultados reales.</p>
           <p className="mt-4 text-base leading-relaxed text-zinc-600">Ofrezco edición profesional adaptada a tus necesidades: redes sociales, YouTube o promoción de tu negocio. Me enfoco en calidad, creatividad y entrega a tiempo.</p>
@@ -150,7 +147,7 @@ export const Projects = () => (
   <section id="portafolio" className="bg-slate-50 py-24 text-slate-800">
     <div className="wrap grid gap-10 lg:grid-cols-[1fr_3fr]">
       <Reveal dir="left">
-        <SectionBadge light>Mi trabajo</SectionBadge>
+        <SectionBadge text="Mi trabajo" theme="light" />
         <h2 className="mt-2 text-4xl font-bold text-ink">Proyectos destacados</h2>
         <p className="mt-3 text-sm text-slate-600">Un vistazo a mis ediciones recientes: desde contenido social hasta videos de marca, dando vida a cada historia con creatividad y precisión.</p>
         <a href="#contacto" className="btn mt-6 border border-slate-300 text-ink hover:bg-slate-100">Ver portafolio completo <ArrowRight size={16} /></a>
@@ -174,7 +171,7 @@ export const Projects = () => (
 export const About = () => (
   <section id="sobre-mi" className="bg-navy py-12 lg:py-20">
     <div className="wrap mb-8 lg:mb-12">
-      <SectionBadge className="mb-2">Sobre mí</SectionBadge>
+      <SectionBadge text="Sobre mí" theme="dark" className="mb-2" />
     </div>
     <div className="wrap grid items-stretch gap-1 lg:gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
       <Reveal dir="right" className="relative h-full">
@@ -188,7 +185,7 @@ export const About = () => (
           </div>
           <img src="/images/about2.webp" alt="Retrato en blanco y negro del editor de video y creador audiovisual" width={933} height={1400} loading="lazy" className="absolute bottom-0 left-1/2 h-[85%] w-[85%] md:h-[90%] md:w-[90%] -translate-x-1/2 object-cover object-[50%_28%] grayscale-[0.2] [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)] lg:h-full lg:w-full lg:object-contain" />
         </div>
-        <p aria-hidden className="absolute z-30 lg:left-24 right-3 top-4 -rotate-6 font-script text-3xl text-emerald-300 animate-float">Edita.<br />Crea.<br />Inspira.</p>
+        <p aria-hidden className="absolute z-30 lg:left-24 right-3 top-4 -rotate-6 font-script text-3xl text-brand/90 animate-float">Edita.<br />Crea.<br />Inspira.</p>
       </Reveal>
       <Reveal delay={150} className="flex h-full flex-col justify-between gap-8">
         <div>
@@ -210,7 +207,7 @@ export const Process = () => (
   <section id="proceso" className="bg-slate-50 py-12 lg:py-20 text-slate-800" aria-labelledby="proceso-title">
     <div className="wrap">
       <Reveal>
-        <SectionBadge light className="mb-4">El proceso</SectionBadge>
+        <SectionBadge text="El proceso" theme="light" className="mb-4" />
         <h2 id="proceso-title" className="text-3xl md:text-4xl font-bold text-ink">Un proceso simple en 4 pasos</h2><p className="mt-2 text-slate-500">Conseguir tu video ideal es fácil. Solo sigue estos pasos.</p></Reveal>
       <ol className="mt-10 grid auto-rows-fr gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map(({ icon: I, t, d }, i) => (
@@ -241,7 +238,7 @@ export const Testimonials = () => (
   <section id="testimonial" className="bg-gradient-to-br from-navy via-ink to-brand2/40 py-12 lg:py-20">
     <div className="wrap grid gap-10 lg:grid-cols-[1fr_3fr]">
       <Reveal dir="left">
-      <SectionBadge className="mb-4">Reseñas</SectionBadge>
+      <SectionBadge text="Reseñas" theme="dark" className="mb-4" />
       <h2 className="text-3xl md:text-4xl font-bold text-white">Lo que dicen mis clientes</h2><p className="mt-2 text-slate-400">Personas reales. Proyectos reales. Resultados reales.</p></Reveal>
       <ul className="grid gap-4 md:grid-cols-3">
         {reviews.map((r, i) => (
@@ -260,7 +257,7 @@ export const Contact = () => (
   <section id="contacto" className="bg-white py-12 lg:py-20 text-slate-800">
     <Reveal className="wrap grid items-center gap-8 lg:grid-cols-[1.2fr_1fr_1fr_auto]">
       <div>
-        <SectionBadge light className="mb-4">Mi contacto</SectionBadge>
+        <SectionBadge text="Mi contacto" theme="light" className="mb-4" />
         <h2 className="text-3xl md:text-4xl font-bold text-ink">¿Listo para trabajar juntos?</h2><p className="mt-2 text-slate-600">¿Tienes un proyecto en mente? Hablemos y convirtamos tus ideas en videos increíbles.</p></div>
       <a href="mailto:pixelframe@gmail.com" className="flex items-center gap-3 text-slate-800 hover:text-brand"><Mail className="text-brand" /><span>{EMAIL}<small className="block text-slate-500">Respuesta en 24 horas</small></span></a>
       <a href={`https://wa.me/${PHONE}?text=${encodeURIComponent(MESSAGE)}`} className="flex items-center gap-3 text-slate-800 hover:text-brand"><MessageCircle className="text-brand" /><span>{formatearTelefono(PHONE)}<small className="block text-slate-500">Disponible en WhatsApp</small></span></a>

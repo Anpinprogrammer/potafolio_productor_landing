@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import PremiumServices from "../components/PremiumServices";
+import SectionBadge from "../components/SectionBadge";
 
 export default function ProjectsPage() {
   return (
@@ -14,7 +15,7 @@ export default function ProjectsPage() {
       </div>
       <div className="wrap pt-20">
         <div className="pb-8">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-brand">Portafolio completo</p>
+          <SectionBadge text="Portafolio completo" theme="dark" />
           <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-white md:text-6xl">
             Todos los <span className="font-script text-brand">proyectos</span>
           </h1>
