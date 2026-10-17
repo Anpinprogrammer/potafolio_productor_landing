@@ -1,5 +1,4 @@
-const PHONE = "573206062300";
-const MESSAGE = "Hola, quiero información sobre edición de video.";
+import { PHONE, MESSAGE } from "../utils";
 
 export default function WhatsAppButton() {
   return (

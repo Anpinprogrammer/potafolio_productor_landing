@@ -1,13 +1,39 @@
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Play, Zap, ShieldCheck, MessageCircle, Mail, Star, Quote, Clapperboard } from "lucide-react";
 import Reveal from "./Reveal";
 import ToolsMarquee from "./ToolsMarquee";
-import { services, projects, steps, reviews } from "../data";
+import { projects, steps, reviews } from "../data";
+import { useServices } from "../lib/useServices";
+import { getServiceIcon } from "../lib/serviceIcons";
+import { formatServiceTitle, type Service } from "../lib/services";
+import ServiceModal from "./ServiceModal";
+import BrandLogo from "./BrandLogo";
+import { PHONE, EMAIL, MESSAGE, formatearTelefono } from "../utils";
+import "./Hero.css";
 
-export const Hero = () => (
+export const Hero = () => {
+  const imageRef = useRef<HTMLImageElement>(null);
+  const [imageReady, setImageReady] = useState(false);
+
+  useEffect(() => {
+    const image = imageRef.current;
+    if (!image) return;
+    let active = true;
+    const revealImage = async () => {
+      try { await image.decode(); } catch { /* Algunos navegadores no permiten decodificar explícitamente. */ }
+      if (active && image.naturalWidth > 0) setImageReady(true);
+    };
+    image.addEventListener("load", revealImage);
+    if (image.complete && image.naturalWidth > 0) void revealImage();
+    return () => { active = false; image.removeEventListener("load", revealImage); };
+  }, []);
+
+  return (
   <section id="inicio" className="relative overflow-hidden">
   <div className="relative mx-auto flex min-h-screen max-w-[1800px] flex-col pt-16 max-sm:min-h-svh">
-    <img src="/images/hero.webp" alt="Editor de video trabajando en su laptop dentro de un estudio con paneles acústicos y cámaras" width={1350} height={1800} fetchPriority="high"
-      className="animate-fadehero absolute inset-y-0 right-0 h-full w-full object-cover object-[60%_45%] md:w-3/5 [mask-image:linear-gradient(to_left,black_55%,transparent)] " />
+    <img ref={imageRef} src="/images/hero.webp" alt="Editor de video trabajando en su laptop dentro de un estudio con paneles acústicos y cámaras" width={1350} height={1800} fetchPriority="high" decoding="async"
+      className={`hero-image ${imageReady ? "hero-image--ready" : ""} absolute inset-y-0 right-0 h-full w-full object-cover object-[60%_45%] md:w-3/5 [mask-image:linear-gradient(to_left,black_55%,transparent)]`} />
     <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-transparent" />
     <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-ink to-transparent max-[1800px]:hidden" />
     <div className="wrap relative my-auto w-full text-slate-50 max-sm:my-0 max-sm:flex max-sm:flex-1 max-sm:py-6 sm:py-14 md:py-16">
@@ -43,38 +69,73 @@ export const Hero = () => (
     <ToolsMarquee />*/}
     <p aria-hidden className="absolute bottom-16 right-16 hidden -rotate-6 animate-float font-script text-4xl text-brand/90 lg:block">Mejores videos,<br />mayor impacto</p>
   </div></section>
-);
+  );
+};
 
-export const Services = () => (
-  <section id="servicios" className="flex items-center bg-white py-12 lg:py-20">
-    <div className="wrap grid w-full items-center gap-12 lg:grid-cols-[1fr_1.6fr]">
-      <Reveal dir="left">
-        <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-brand mb-4">
-              <span aria-hidden className="h-px w-10 bg-brand/60" /> Mis servicios<span aria-hidden className="h-px w-10 bg-brand/60" />
-        </p>
-        {/** 
-        <p className="text-xl font-bold text-navy">Qué hago</p>*/}
-        <h2 className="mt-2 text-4xl font-bold text-ink">Servicios de edición de video</h2>
-        <p className="mt-2 font-medium text-navy text-lg">Cortes limpios. Imágenes que enganchan. Resultados reales.</p>
-        <p className="mt-4 text-slate-500">Ofrezco edición profesional adaptada a tus necesidades: redes sociales, YouTube o promoción de tu negocio. Me enfoco en calidad, creatividad y entrega a tiempo.</p>
-        <a href="#contacto" className="btn-primary mt-6">Ver servicios <ArrowRight size={16} /></a>
-      </Reveal>
-      <ul className="grid auto-rows-fr gap-4 sm:grid-cols-2 md:grid-cols-3">
-        {services.map(({ icon: I, t, d }, i) => (
-          <li key={t} className="h-full min-w-0">
-            <Reveal dir="zoom" delay={i * 90} className="h-full">
-              <article className="card flex h-full min-h-[11rem] flex-col bg-navy">
-                <I className="mb-3 shrink-0 text-brand" />
-                <h3 className="font-semibold text-white">{t}</h3>
-                <p className="text-sm text-slate-400">{d}</p>
-              </article>
-            </Reveal>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
-);
+export const Services = () => {
+  const { services, loading, error, retry } = useServices();
+  const [selected, setSelected] = useState<{ service: Service; opener: HTMLButtonElement } | null>(null);
+  const navigate = useNavigate();
+  const dismiss = (quote: boolean) => {
+    setSelected(null);
+    if (quote) {
+      navigate("/#contacto");
+      requestAnimationFrame(() => {
+        const heading = document.querySelector<HTMLElement>("#contacto h2");
+        heading?.setAttribute("tabindex", "-1");
+        heading?.focus({ preventScroll: true });
+      });
+    }
+  };
+  return (
+    <section id="servicios" aria-labelledby="servicios-title" aria-busy={loading} className="bg-white py-16 lg:py-24">
+      <div className="wrap grid w-full items-center gap-10 lg:grid-cols-12 lg:gap-8 xl:gap-12">
+        <Reveal dir="left" className="min-w-0 lg:col-span-4">
+          <p className="mb-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-700">
+            <span aria-hidden className="h-px w-10 bg-brand/60" /> Mis servicios<span aria-hidden className="h-px w-10 bg-brand/60" />
+          </p>
+          <h2 id="servicios-title" className="text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl">Servicios de edición de video</h2>
+          <p className="mt-5 text-lg font-medium leading-relaxed text-zinc-800">Cortes limpios. Imágenes que enganchan. Resultados reales.</p>
+          <p className="mt-4 text-base leading-relaxed text-zinc-600">Ofrezco edición profesional adaptada a tus necesidades: redes sociales, YouTube o promoción de tu negocio. Me enfoco en calidad, creatividad y entrega a tiempo.</p>
+          <Link to="/#contacto" className="group mt-8 inline-flex items-center gap-3 rounded-full bg-emerald-600 px-6 py-3 font-semibold text-white shadow-lg shadow-emerald-900/30 transition-colors duration-300 hover:bg-emerald-500 motion-reduce:transition-none">
+            Reserva tu fecha
+            <ArrowRight size={18} aria-hidden className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none" />
+          </Link>
+        </Reveal>
+        <div className="min-w-0 lg:col-span-8">
+          {(error || services.length === 0) && (
+            <div className="flex min-h-[11rem] flex-col items-center justify-center gap-4 text-center text-sm text-slate-500" role={error ? "alert" : "status"}>
+              <p>{loading ? "Cargando servicios…" : error ? "No pudimos actualizar los servicios." : "Pronto encontrarás nuevos servicios aquí."}</p>
+              {error && !loading && <button type="button" onClick={retry} className="btn-primary">Volver a intentar</button>}
+            </div>
+          )}
+          <ul className="grid grid-cols-1 auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((service, i) => {
+              const { _id, icon, title, description } = service;
+              const Icon = getServiceIcon(icon);
+              return (
+                <li key={_id} className="h-full min-w-0">
+                  <Reveal dir="zoom" delay={i * 90} className="h-full">
+                    <article className="group relative flex h-full min-h-[12rem] flex-col rounded-2xl border border-zinc-800 bg-zinc-900 p-5 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-emerald-500/30 hover:shadow-[0_0_20px_rgba(16,185,129,0.05)] focus-within:border-emerald-500/50 motion-reduce:transform-none motion-reduce:transition-none xl:p-6">
+                      <button type="button" aria-haspopup="dialog" aria-label={`Ver detalles de ${formatServiceTitle(title)}`}
+                        onClick={(event) => setSelected({ service, opener: event.currentTarget })}
+                        className="absolute inset-0 z-10 cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-500" />
+                      <Icon size={28} strokeWidth={1.7} className="mb-5 shrink-0 text-emerald-400" aria-hidden />
+                      <h3 className="break-words text-base font-semibold leading-snug tracking-tight text-white">{formatServiceTitle(title)}</h3>
+                      <p className="mt-2 break-words text-sm leading-relaxed text-zinc-400">{description}</p>
+                      <span aria-hidden="true" className="mt-auto flex items-center gap-2 pt-5 text-xs font-medium text-emerald-400"><Play size={14} /> Conocer el servicio <ArrowRight size={14} className="transition-transform group-hover:translate-x-1 motion-reduce:transform-none" /></span>
+                    </article>
+                  </Reveal>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+      {selected && <ServiceModal service={selected.service} opener={selected.opener} onDismiss={dismiss} />}
+    </section>
+  );
+};
 
 export const Projects = () => (
   <section id="portafolio" className="bg-slate-50 py-24 text-slate-800">
@@ -130,8 +191,8 @@ export const About = () => (
         <dl className="grid grid-cols-3 gap-4 text-center">
           {[["3+","Años de experiencia"],["100+","Proyectos completados"],["50+","Clientes felices"]].map(([n, l]) => <div key={l} className="card"><dt className="text-3xl font-extrabold text-white">{n}</dt><dd className="text-xs text-slate-400">{l}</dd></div>)}
         </dl>
-        <div>
-          <ToolsMarquee className="relative w-full" />
+        <div className="flex justify-center">
+          <ToolsMarquee className="relative flex w-full flex-col items-center text-center" />
         </div>
       </Reveal>
     </div>
@@ -139,12 +200,33 @@ export const About = () => (
 );
 
 export const Process = () => (
-  <section className="bg-slate-50 py-24 text-slate-800" aria-labelledby="proceso">
+  <section id="proceso" className="bg-slate-50 py-12 lg:py-20 text-slate-800" aria-labelledby="proceso-title">
     <div className="wrap">
-      <Reveal><h2 id="proceso" className="text-4xl font-bold text-ink">Un proceso simple en 4 pasos</h2><p className="mt-2 text-slate-500">Conseguir tu video ideal es fácil. Solo sigue estos pasos.</p></Reveal>
-      <ol className="mt-12 grid gap-8 md:grid-cols-4">
+      <Reveal>
+        <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-brand mb-4">
+            <span aria-hidden className="h-px w-10 bg-brand/60" /> El proceso<span aria-hidden className="h-px w-10 bg-brand/60" />
+        </p>
+        <h2 id="proceso-title" className="text-3xl md:text-4xl font-bold text-ink">Un proceso simple en 4 pasos</h2><p className="mt-2 text-slate-500">Conseguir tu video ideal es fácil. Solo sigue estos pasos.</p></Reveal>
+      <ol className="mt-10 grid auto-rows-fr gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map(({ icon: I, t, d }, i) => (
-          <li key={t}><Reveal delay={i * 150}><div className="flex gap-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand/15 text-brand2"><I /></span><div><p className="text-xs font-bold text-brand2">0{i + 1}</p><h3 className="font-semibold text-ink">{t}</h3><p className="mt-1 text-sm text-slate-500">{d}</p></div></div></Reveal></li>
+          <li key={t} className="h-full min-w-0">
+            <Reveal delay={i * 120} className="h-full">
+              <article className="group relative isolate flex h-full min-h-[16rem] flex-col overflow-hidden rounded-2xl border border-white/10 bg-navy p-6 shadow-[0_12px_28px_-16px_rgba(7,12,28,0.45)] transition duration-300 hover:-translate-y-1 hover:border-brand/50 hover:shadow-[0_20px_36px_-20px_rgba(11,61,46,0.5)] motion-reduce:transform-none motion-reduce:transition-none">
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgba(20,107,58,0.2),transparent_65%)]" />
+                <div className="flex items-center justify-between gap-4">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-300/15 bg-emerald-300/10 text-emerald-300">
+                    <I size={23} strokeWidth={1.7} aria-hidden />
+                  </span>
+                  <span aria-hidden="true" className="text-4xl font-extrabold tabular-nums tracking-tight text-white/15">0{i + 1}</span>
+                </div>
+                <h3 className="mt-7 text-lg font-semibold leading-snug text-white">{t}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-400">{d}</p>
+                <div aria-hidden="true" className="mt-auto pt-6">
+                  <span className="block h-0.5 w-10 rounded-full bg-emerald-300/60 transition-all duration-300 group-hover:w-16 group-hover:bg-emerald-300 motion-reduce:transition-none" />
+                </div>
+              </article>
+            </Reveal>
+          </li>
         ))}
       </ol>
     </div>
@@ -152,9 +234,13 @@ export const Process = () => (
 );
 
 export const Testimonials = () => (
-  <section className="bg-gradient-to-br from-navy via-ink to-brand2/40 py-24">
+  <section id="testimonial" className="bg-gradient-to-br from-navy via-ink to-brand2/40 py-12 lg:py-20">
     <div className="wrap grid gap-10 lg:grid-cols-[1fr_3fr]">
-      <Reveal dir="left"><h2 className="text-4xl font-bold text-white">Lo que dicen mis clientes</h2><p className="mt-2 text-slate-400">Personas reales. Proyectos reales. Resultados reales.</p></Reveal>
+      <Reveal dir="left">
+      <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-brand mb-4">
+          <span aria-hidden className="h-px w-10 bg-brand/60" />Reseñas<span aria-hidden className="h-px w-10 bg-brand/60" />
+      </p>  
+      <h2 className="text-3xl md:text-4xl font-bold text-white">Lo que dicen mis clientes</h2><p className="mt-2 text-slate-400">Personas reales. Proyectos reales. Resultados reales.</p></Reveal>
       <ul className="grid gap-4 md:grid-cols-3">
         {reviews.map((r, i) => (
           <li key={r.n}><Reveal delay={i * 150} className="h-full"><figure className="card h-full"><Quote className="text-brand" size={18} />
@@ -169,12 +255,18 @@ export const Testimonials = () => (
 );
 
 export const Contact = () => (
-  <section id="contacto" className="bg-ink py-20">
+  <section id="contacto" className="bg-white py-12 lg:py-20 text-slate-800">
     <Reveal className="wrap grid items-center gap-8 lg:grid-cols-[1.2fr_1fr_1fr_auto]">
-      <div><h2 className="text-3xl font-bold text-white">¿Listo para trabajar juntos?</h2><p className="mt-2 text-slate-400">¿Tienes un proyecto en mente? Hablemos y convirtamos tus ideas en videos increíbles.</p></div>
-      <a href="mailto:pixelframe@gmail.com" className="flex items-center gap-3 text-slate-200 hover:text-white"><Mail className="text-brand" /><span>pixelframe@gmail.com<small className="block text-slate-500">Respuesta en 24 horas</small></span></a>
-      <a href="https://wa.me/573001234567" className="flex items-center gap-3 text-slate-200 hover:text-white"><MessageCircle className="text-brand" /><span>+57 300 123 4567<small className="block text-slate-500">Disponible en WhatsApp</small></span></a>
-      <a href="mailto:pixelframe@gmail.com" className="btn-primary justify-center">Contáctame <ArrowRight size={16} /></a>
+      <div>
+        <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-brand mb-4">
+          <span aria-hidden className="h-px w-10 bg-brand/60" />Mi contacto<span aria-hidden className="h-px w-10 bg-brand/60" />
+      </p>
+        <h2 className="text-3xl md:text-4xl font-bold text-ink">¿Listo para trabajar juntos?</h2><p className="mt-2 text-slate-600">¿Tienes un proyecto en mente? Hablemos y convirtamos tus ideas en videos increíbles.</p></div>
+      <a href="mailto:pixelframe@gmail.com" className="flex items-center gap-3 text-slate-800 hover:text-brand"><Mail className="text-brand" /><span>{EMAIL}<small className="block text-slate-500">Respuesta en 24 horas</small></span></a>
+      <a href={`https://wa.me/${PHONE}?text=${encodeURIComponent(MESSAGE)}`} className="flex items-center gap-3 text-slate-800 hover:text-brand"><MessageCircle className="text-brand" /><span>{formatearTelefono(PHONE)}<small className="block text-slate-500">Disponible en WhatsApp</small></span></a>
+      <div className="flex justify-center">
+        <a href={`mailto:${EMAIL}`} className="btn-primary justify-center">Contáctame <ArrowRight size={16} /></a>
+      </div>
     </Reveal>
   </section>
 );
@@ -182,7 +274,7 @@ export const Contact = () => (
 export const Footer = () => (
   <footer className="border-t border-white/10 bg-ink py-8 text-sm text-slate-500">
     <div className="wrap flex flex-col items-center justify-between gap-3 md:flex-row">
-      <span className="flex items-center gap-2 font-semibold text-white"><Clapperboard className="text-brand" size={18} /> Yamamoto</span>
+      <BrandLogo className="h-10 md:h-12 lg:h-14 w-auto" />
       <p>© {new Date().getFullYear()} Yamamoto. Todos los derechos reservados.</p>
     </div>
   </footer>

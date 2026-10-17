@@ -1,9 +1,11 @@
 @tailwind base; @tailwind components; @tailwind utilities;
-html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; scrollbar-gutter: stable; }
 @media (min-width: 1536px) { html { font-size: 18px; } }
 @media (min-width: 1920px) { html { font-size: 20px; } }
 @media (min-width: 2560px) { html { font-size: 24px; } }
 body { @apply bg-ink text-slate-200 font-sans antialiased; }
+/* Las entradas laterales se recortan sin crear otro contenedor de desplazamiento. */
+.site-content { overflow-x: clip; }
 :focus-visible { @apply outline-2 outline-offset-2 outline-brand; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *{animation:none!important} }
 @layer components {

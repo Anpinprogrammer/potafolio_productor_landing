@@ -35,6 +35,7 @@ export const portfolioQuery = /* groq */ `
     _type == "project"
     && !(_id in path("drafts.**"))
     && !(_id in path("versions.**"))
+    && (!$featuredOnly || featured == true)
   ]
   | order(defined(order) desc, order asc, title asc, _id asc) {
     _id,
@@ -72,8 +73,9 @@ export const portfolioQuery = /* groq */ `
 export function fetchPortfolioProjects(
   client: Pick<SanityClient, "fetch">,
   signal?: AbortSignal,
+  featuredOnly = false,
 ): Promise<PortfolioProject[]> {
-  return client.fetch<PortfolioProject[]>(portfolioQuery, {}, {
+  return client.fetch<PortfolioProject[]>(portfolioQuery, { featuredOnly }, {
     perspective: "published",
     signal,
   });

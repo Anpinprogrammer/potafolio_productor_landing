@@ -1,5 +1,5 @@
 import { Youtube, Smartphone, Megaphone, Wand2, Palette, AudioLines, Lightbulb, MessagesSquare, Scissors, Rocket, Plane, Zap, Clapperboard } from "lucide-react";
-export const nav = [["Inicio","#inicio"],["Portafolio","#portafolio"],["Servicios","#servicios"],["Sobre mí","#sobre-mi"],["Contacto","#contacto"]];
+export const nav = [["Inicio","#inicio"],["Portafolio","#portafolio"],["Servicios","#servicios"],["Sobre mí","#sobre-mi"],["Proceso", "#proceso"], ["Reseñas","#testimonial"]];
 export const services = [
   { icon: Youtube, t: "Edición para YouTube", d: "Formato largo y corto" },
   { icon: Smartphone, t: "Reels y redes sociales", d: "Instagram, TikTok y Shorts" },

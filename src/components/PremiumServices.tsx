@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal, flushSync } from "react-dom";
+import { Link } from "react-router-dom";
 import { ArrowRight, ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 import Reveal from "./Reveal";
 import YouTubeEmbed from "./YouTubeEmbed";
@@ -51,7 +52,7 @@ function ServiceCard({ s, clone, onPlay }: { s: Service; clone?: boolean; onPlay
               <span className="flex items-center gap-2 rounded-full bg-black/35 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/90 ring-1 ring-white/15 backdrop-blur-md">
                 <Icon size={13} style={{ color: s.accent }} aria-hidden /> {s.category}
               </span>
-              {s.featured && <span className="rounded-full bg-black/45 px-2.5 py-1.5 text-[10px] font-semibold text-white ring-1 ring-white/25 backdrop-blur-md">Destacado</span>}
+              {/*s.featured && <span className="rounded-full bg-black/45 px-2.5 py-1.5 text-[10px] font-semibold text-white ring-1 ring-white/25 backdrop-blur-md">Destacado</span>*/}
             </div>
             {s.duration && <span className="rounded-full bg-black/45 px-2.5 py-1 text-[10px] font-semibold tabular-nums text-white ring-1 ring-white/15 backdrop-blur-md">
               {s.duration}
@@ -97,17 +98,20 @@ function ServiceCard({ s, clone, onPlay }: { s: Service; clone?: boolean; onPlay
   );
 }
 
-export default function PremiumServices() {
-  const { projects, loading, error, retry } = usePortfolioProjects();
+type Collection = "featured" | "all";
+
+export default function PremiumServices({ collection = "featured" }: { collection?: Collection }) {
+  const { projects, loading, error, retry } = usePortfolioProjects({ featuredOnly: collection === "featured" });
   const cards = useMemo(() => toPortfolioCards(projects, premiumServices), [projects]);
-  return <PremiumServicesContent key={cards.map((card) => card.id).join(",")} cards={cards} loading={loading} error={error} onRetry={retry} />;
+  return <PremiumServicesContent key={`${collection}:${cards.map((card) => card.id).join(",")}`} collection={collection} cards={cards} loading={loading} error={error} onRetry={retry} />;
 }
 
-function PremiumServicesContent({ cards, loading, error, onRetry }: {
-  cards: PortfolioCard[]; loading: boolean; error: boolean; onRetry: () => void;
+function PremiumServicesContent({ cards, loading, error, onRetry, collection }: {
+  cards: PortfolioCard[]; loading: boolean; error: boolean; onRetry: () => void; collection: Collection;
 }) {
   const n = cards.length;
   const [mobile, setMobile] = useState(() => window.matchMedia(MOBILE).matches);
+  const carousel = mobile && collection === "featured";
   const [reduce] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   // pos: 1..n = cards reales; 0 y n+1 = clones (para el salto continuo)
   const [pos, setPos] = useState(1);
@@ -151,7 +155,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry }: {
 
   const active = n > 1 ? ((pos - 1) % n + n) % n : 0;
   // En móvil se añaden clones al inicio y al final para que el bucle no tenga corte
-  const slides = mobile && n > 1 ? [cards[n - 1], ...cards, cards[0]] : cards;
+  const slides = carousel && n > 1 ? [cards[n - 1], ...cards, cards[0]] : cards;
 
   /* ---------- Reproductor en ventana modal ---------- */
   const [playing, setPlaying] = useState<Service | null>(null);
@@ -275,10 +279,12 @@ function PremiumServicesContent({ cards, loading, error, onRetry }: {
   useEffect(() => { if (playing) dialogRef.current?.focus(); }, [playing]);
 
   return (
-    <section id="portafolio" aria-busy={loading} className="relative overflow-hidden py-12 lg:py-20"
-      style={{ background: "radial-gradient(130% 100% at 50% 0%, #0a1420 0%, #03060c 55%, #010204 100%)" }}>
+    <section id="portafolio" aria-label={collection === "all" ? "Todos los proyectos del portafolio" : "Proyectos destacados"} aria-busy={loading}
+      className={`relative overflow-hidden ${collection === "all" ? "pb-20 pt-8" : "py-12 lg:py-20"}`}
+      style={collection === "featured" ? { background: "radial-gradient(130% 100% at 50% 0%, #0a1420 0%, #03060c 55%, #010204 100%)" } : undefined}>
       {/* Ambiente: halos de color + grano */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
+      <div aria-hidden className="pointer-events-none absolute inset-0"
+        style={collection === "all" ? { maskImage: "linear-gradient(to bottom, transparent 0%, black 160px)" } : undefined}>
         <div className="absolute -top-40 left-1/2 h-[540px] w-[900px] -translate-x-1/2 rounded-full bg-brand/25 blur-[140px]" />
         <div className="absolute -bottom-32 -right-24 h-[420px] w-[560px] rounded-full bg-brand2/40 blur-[130px]" />
         <div className="absolute inset-0 opacity-[0.05] mix-blend-soft-light" style={{ backgroundImage: GRAIN }} />
@@ -286,45 +292,45 @@ function PremiumServicesContent({ cards, loading, error, onRetry }: {
 
       <div className="wrap relative">
         {/* Cabecera editorial */}
-        <div className="flex flex-col gap-8 border-b border-white/10 pb-9 lg:flex-row lg:items-end lg:justify-between">
+        {collection === "featured" && <div className="flex flex-col gap-8 border-b border-white/10 pb-9 lg:flex-row lg:items-end lg:justify-between">
           <Reveal className="max-w-2xl">
             <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-brand">
-              <span aria-hidden className="h-px w-10 bg-brand/60" /> Portafolio de servicios <span aria-hidden className="h-px w-10 bg-brand/60" />
+              <span aria-hidden className="h-px w-10 bg-brand/60" /> Proyectos destacados <span aria-hidden className="h-px w-10 bg-brand/60" />
             </p>
-            <h2 className="mt-4 text-4xl font-extrabold leading-[1.06] text-white md:text-5xl">
-              Cada proyecto, <span className="font-script text-[2.6rem] font-normal text-brand md:text-[3.4rem]">una película</span>
+            <h2 className="mt-4 text-3xl md:text-4xl font-extrabold leading-[1.06] text-white lg:text-5xl">
+              Cada proyecto, <span className="font-script text-[2.38rem] font-normal text-brand md:text-[3.4rem]">una película</span>
             </h2>
             <p className="mt-4 max-w-xl text-slate-400">
-              Cuatro formas de contar tu historia: del viaje que inspira al anuncio que convierte. Dirección, edición y color con acabado de cine.
+              Una selección de mis proyectos destacados: del viaje que inspira al anuncio que convierte. Dirección, edición y color con acabado de cine.
             </p>
           </Reveal>
           <Reveal dir="left" delay={150} className="shrink-0">
-            <a href="#contacto" className="btn-ghost">Reserva tu fecha <ArrowRight size={16} /></a>
+            <Link to="/proyectos" className="btn-ghost">Ver todos los proyectos <ArrowRight size={16} /></Link>
           </Reveal>
-        </div>
+        </div>}
 
         {/* Galería: grid en desktop, carrusel infinito de 1 card en móvil */}
-        <div className="relative mt-12">
+        <div className={`relative ${collection === "featured" ? "mt-12" : ""}`}>
           {!n && (
             <div className="flex min-h-64 flex-col items-center justify-center gap-4 text-center text-sm text-slate-400" role={error ? "alert" : "status"}>
-              <p>{loading ? "Cargando proyectos…" : error ? "No pudimos cargar los proyectos." : "Pronto encontrarás nuevos proyectos aquí."}</p>
+              <p>{loading ? "Cargando proyectos…" : error ? "No pudimos cargar los proyectos." : collection === "featured" ? "Pronto encontrarás nuevos proyectos destacados aquí." : "Pronto encontrarás nuevos proyectos aquí."}</p>
               {error && !loading && <button type="button" onClick={onRetry} className="btn-ghost">Volver a intentar</button>}
             </div>
           )}
-          <div className="relative mx-auto max-w-[27rem] overflow-hidden sm:max-w-none sm:overflow-visible">
+          <div className={collection === "all" ? "relative" : "relative mx-auto max-w-[27rem] overflow-hidden sm:max-w-none sm:overflow-visible"}>
             <ul
-              className={mobile ? "flex" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"}
-              style={mobile && n > 1 ? {
+              className={collection === "all" ? "grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3" : carousel ? "flex" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"}
+              style={carousel && n > 1 ? {
                 transform: `translateX(-${pos * 100}%)`,
                 transitionProperty: "transform",
                 transitionTimingFunction: "ease-out",
                 transitionDuration: animate ? `${ms}ms` : "0ms",
               } : undefined}>
               {slides.map((s, k) => {
-                const clone = mobile && n > 1 && (k === 0 || k === slides.length - 1);
+                const clone = carousel && n > 1 && (k === 0 || k === slides.length - 1);
                 return (
-                  <li key={`${s.id}-${k}`} aria-hidden={clone || undefined} className={mobile ? "h-auto w-full shrink-0 px-11" : ""}>
-                    <Reveal delay={(k % n) * 110} className="h-full">
+                  <li key={`${s.id}-${k}`} aria-hidden={clone || undefined} className={carousel ? "h-auto w-full shrink-0 px-11" : "min-w-0"}>
+                    <Reveal delay={collection === "all" ? (k % 3) * 90 : (k % n) * 110} className="h-full">
                       <ServiceCard s={s} clone={clone} onPlay={openVideo} />
                     </Reveal>
                   </li>
@@ -333,7 +339,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry }: {
             </ul>
 
             {/* Flechas: siempre activas (el bucle es infinito en ambos sentidos) */}
-            {mobile && n > 1 && (
+            {carousel && n > 1 && (
               <>
                 <button type="button" onClick={() => move(-1)} aria-label="Ver el servicio anterior"
                   className="absolute left-0 top-[38%] z-20 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white ring-1 ring-white/25 backdrop-blur-md transition duration-300 hover:bg-black/75 active:scale-90 motion-reduce:transition-none">
@@ -348,7 +354,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry }: {
           </div>
 
           {/* Indicador de posición (solo móvil) */}
-          {mobile && n > 1 && (
+          {carousel && n > 1 && (
             <div className="mt-5 flex items-center justify-center gap-1.5">
               {cards.map((s, k) => (
                 <span key={s.id} aria-hidden

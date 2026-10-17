@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { client } from "./sanityClient";
 import { fetchPortfolioProjects, type PortfolioProject } from "./portfolio";
 
-export function usePortfolioProjects() {
+export function usePortfolioProjects({ featuredOnly = false }: { featuredOnly?: boolean } = {}) {
   const [projects, setProjects] = useState<PortfolioProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -16,7 +16,7 @@ export function usePortfolioProjects() {
       const request = new AbortController();
       controller = request;
       try {
-        const result = await fetchPortfolioProjects(client, request.signal);
+        const result = await fetchPortfolioProjects(client, request.signal, featuredOnly);
         if (!active || request.signal.aborted) return;
         setProjects(result);
         setError(false);
@@ -36,7 +36,7 @@ export function usePortfolioProjects() {
       controller?.abort();
       document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [attempt]);
+  }, [attempt, featuredOnly]);
 
   const retry = () => { setLoading(true); setError(false); setAttempt((value) => value + 1); };
   return { projects, loading, error, retry };

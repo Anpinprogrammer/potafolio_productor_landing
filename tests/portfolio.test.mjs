@@ -89,6 +89,24 @@ test('no convierte un error de red en una lista vacía de proyectos', async () =
   await assert.rejects(fetchPortfolioProjects(client), /Sin conexión/);
 });
 
+test('la landing solicita destacados y la página completa incluye todos los proyectos publicados', async () => {
+  const requests = [];
+  const client = {fetch: async (query, params, options) => {
+    requests.push({query, params, options});
+    return [];
+  }};
+  await fetchPortfolioProjects(client, undefined, true);
+  await fetchPortfolioProjects(client);
+  assert.equal(requests[0].params.featuredOnly, true);
+  assert.equal(requests[1].params.featuredOnly, false);
+  for (const {query, options} of requests) {
+    assert.match(query, /!\$featuredOnly \|\| featured == true/);
+    assert.match(query, /drafts\.\*\*/);
+    assert.match(query, /versions\.\*\*/);
+    assert.equal(options.perspective, 'published');
+  }
+});
+
 test('formatea duraciones y omite valores que no están disponibles', () => {
   assert.equal(formatDuration(72), '1:12');
   assert.equal(formatDuration(150), '2:30');

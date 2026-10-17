@@ -1,0 +1,21 @@
+.logo-intro { position: fixed; inset: 0; z-index: 200; isolation: isolate; }
+.logo-intro__backdrop { position: absolute; inset: 0; background: #010204; }
+.logo-intro__flight {
+  position: absolute; left: 50%; top: 50%; width: min(82vw, 860px); aspect-ratio: 2127 / 739;
+  transform: translate(-50%, -50%); transform-origin: center; will-change: transform;
+}
+.logo-intro__skip {
+  position: absolute; bottom: max(28px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
+  padding: 10px 16px; border-radius: 999px; color: rgba(255,255,255,.5); font-size: 11px; letter-spacing: .08em;
+  transition: color 180ms, opacity 180ms;
+}
+.logo-intro__skip:hover, .logo-intro__skip:focus-visible { color: white; }
+.logo-intro--docking .logo-intro__skip { opacity: 0; }
+.site-shell { opacity: 0; transition: opacity 800ms cubic-bezier(.22,.61,.36,1); }
+.site-shell--visible { opacity: 1; }
+/* El hero conserva sus entradas y retardos hasta que la bienvenida termina. */
+.site-shell--intro-active #inicio,
+.site-shell--intro-active #inicio * { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .site-shell, .logo-intro__skip { transition: none; }
+}
