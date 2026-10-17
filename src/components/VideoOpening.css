@@ -1,0 +1,90 @@
+.portfolio-opening {
+  position: absolute; inset: 0; z-index: 10; overflow: hidden; pointer-events: none;
+  isolation: isolate; background: #03060c; color: white; will-change: clip-path, opacity;
+}
+.portfolio-opening--loading .portfolio-opening__scene { animation: portfolio-aperture-in 850ms cubic-bezier(.2,.75,.25,1) both; }
+.portfolio-opening__scene, .portfolio-opening__poster, .portfolio-opening__vignette, .portfolio-opening__grain {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+}
+.portfolio-opening__poster { object-fit: cover; filter: saturate(.65) brightness(.7); animation: portfolio-poster-drift 12s ease-in-out infinite alternate; }
+.portfolio-opening__vignette {
+  background: radial-gradient(ellipse at 50% 45%, transparent 5%, rgba(1,2,4,.65) 90%), linear-gradient(0deg, rgba(1,2,4,.85), transparent 45%, rgba(1,2,4,.4));
+}
+.portfolio-opening__grain { opacity: .07; }
+.portfolio-opening__aura {
+  position: absolute; inset: -35%; background: radial-gradient(ellipse at center, var(--portfolio-accent), transparent 60%);
+  mix-blend-mode: screen; animation: portfolio-aura-breathe 4s ease-in-out infinite;
+}
+.portfolio-opening__beam {
+  position: absolute; inset: -70% -35%; mix-blend-mode: screen;
+  background: linear-gradient(110deg, transparent 42%, rgba(255,255,255,.04) 47%, rgba(255,255,255,.35) 50%, var(--portfolio-accent) 50.3%, transparent 54%);
+  animation: portfolio-light-sweep 3.8s cubic-bezier(.4,0,.2,1) infinite;
+}
+.portfolio-opening__scan {
+  position: absolute; inset: 0; opacity: .12;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,.15) 3px 4px);
+  mask-image: linear-gradient(transparent, black, transparent);
+}
+.portfolio-opening__matte { position: absolute; inset-inline: 0; height: 9%; background: rgba(1,2,4,.9); z-index: 1; }
+.portfolio-opening__matte--top { top: 0; }
+.portfolio-opening__matte--bottom { bottom: 0; }
+.portfolio-opening__frame {
+  position: absolute; inset: clamp(12px, 3%, 28px); z-index: 2;
+  display: flex; flex-direction: column; justify-content: space-between; padding: clamp(10px, 2%, 20px);
+  animation: portfolio-frame-in 700ms ease-out both;
+}
+.portfolio-opening__corner { position: absolute; width: clamp(16px, 4vw, 34px); height: clamp(16px, 4vw, 34px); border: 0 solid rgba(255,255,255,.6); }
+.portfolio-opening__corner--tl { top: 0; left: 0; border-top-width: 1px; border-left-width: 1px; }
+.portfolio-opening__corner--tr { top: 0; right: 0; border-top-width: 1px; border-right-width: 1px; }
+.portfolio-opening__corner--bl { bottom: 0; left: 0; border-bottom-width: 1px; border-left-width: 1px; }
+.portfolio-opening__corner--br { bottom: 0; right: 0; border-bottom-width: 1px; border-right-width: 1px; }
+.portfolio-opening__header, .portfolio-opening__footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  font: 600 clamp(8px, 1vw, 10px)/1.4 ui-monospace, monospace; letter-spacing: .2em;
+}
+.portfolio-opening__header { color: rgba(255,255,255,.75); }
+.portfolio-opening__slash { padding-inline: 7px; color: var(--portfolio-accent); }
+.portfolio-opening__signal { display: flex; align-items: center; gap: 8px; }
+.portfolio-opening__signal i { height: 5px; width: 5px; border-radius: 100%; background: var(--portfolio-accent); box-shadow: 0 0 12px var(--portfolio-accent); }
+.portfolio-opening__copy { display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 2vw, 18px); padding-block: 10px; text-align: center; }
+.portfolio-opening__category { font: 600 clamp(8px, 1vw, 11px)/1.4 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .35em; color: rgba(255,255,255,.65); }
+.portfolio-opening__title {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; max-width: 85%;
+  font-size: clamp(20px, 3.5vw, 42px); font-weight: 800; line-height: 1.08; letter-spacing: -.035em;
+  text-wrap: balance; text-shadow: 0 3px 30px rgba(0,0,0,.65);
+}
+.portfolio-opening__rule { width: 48px; height: 2px; background: var(--portfolio-accent); box-shadow: 0 0 18px var(--portfolio-accent); }
+.portfolio-opening__footer { color: rgba(255,255,255,.7); letter-spacing: .08em; }
+.portfolio-opening__track { position: relative; overflow: hidden; width: 30%; height: 2px; background: rgba(255,255,255,.15); }
+.portfolio-opening__track > span { position: absolute; inset-block: 0; left: 0; width: 40%; background: var(--portfolio-accent); animation: portfolio-loading-track 2.4s ease-in-out infinite; }
+.portfolio-opening__shutter, .portfolio-opening__reveal-light { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.portfolio-opening__shutter { background: linear-gradient(90deg, #03060c, #111b24, #03060c); animation: portfolio-shutter-open 850ms cubic-bezier(.2,.75,.25,1) both; }
+.portfolio-opening__reveal-light { opacity: 0; }
+
+/* El relevo comienza al reproducir; no se impone una espera mínima. */
+.portfolio-opening--reveal { animation: portfolio-reveal-out 520ms cubic-bezier(.2,.7,.25,1) both; }
+.portfolio-opening--reveal .portfolio-opening__shutter { display: none; }
+.portfolio-opening--reveal .portfolio-opening__frame { animation: portfolio-copy-out 300ms ease-in both; }
+.portfolio-opening--reveal .portfolio-opening__reveal-light {
+  inset: 0 -20%; mix-blend-mode: screen;
+  background: linear-gradient(0deg, transparent 47%, rgba(255,255,255,.65) 50%, var(--portfolio-accent) 50.3%, transparent 53%);
+  animation: portfolio-reveal-light 500ms ease-out both;
+}
+
+@keyframes portfolio-aperture-in { from { clip-path: inset(45% 5%); } to { clip-path: inset(0); } }
+@keyframes portfolio-shutter-open { from { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); } to { clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); } }
+@keyframes portfolio-frame-in { from { opacity: 0; transform: scale(1.08); } to { opacity: 1; transform: scale(1); } }
+@keyframes portfolio-poster-drift { from { transform: scale(1.04) translate3d(-.5%, .5%, 0); } to { transform: scale(1.14) translate3d(.5%, -.5%, 0); } }
+@keyframes portfolio-aura-breathe { 0%, 100% { opacity: .13; transform: scale(.85); } 50% { opacity: .35; transform: scale(1.08); } }
+@keyframes portfolio-light-sweep { 0% { opacity: 0; transform: translate3d(-70%, 0, 0); } 18%, 65% { opacity: .6; } 85%, 100% { opacity: 0; transform: translate3d(70%, 0, 0); } }
+@keyframes portfolio-loading-track { 0% { transform: translateX(-110%); } 50% { transform: translateX(150%); } 100% { transform: translateX(360%); } }
+@keyframes portfolio-reveal-out { 0% { clip-path: inset(0); opacity: 1; } 45% { opacity: 1; } 100% { clip-path: inset(50% 0); opacity: 0; } }
+@keyframes portfolio-copy-out { to { opacity: 0; transform: scale(1.035); filter: blur(4px); } }
+@keyframes portfolio-reveal-light { 0%, 100% { opacity: 0; transform: scaleY(.5); } 40% { opacity: .5; transform: scaleY(2); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-opening, .portfolio-opening * { animation: none !important; transition: none !important; }
+  .portfolio-opening__shutter { display: none; }
+  .portfolio-opening__aura { opacity: .15; }
+  .portfolio-opening__beam { opacity: .1; }
+}

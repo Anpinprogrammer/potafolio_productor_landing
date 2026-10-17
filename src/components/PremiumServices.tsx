@@ -1,8 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal, flushSync } from "react-dom";
 import { ArrowRight, ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 import Reveal from "./Reveal";
+import YouTubeEmbed from "./YouTubeEmbed";
+import VideoOpening from "./VideoOpening";
 import { premiumServices } from "../data";
+import { usePortfolioProjects } from "../lib/usePortfolioProjects";
+import { toPortfolioCards, type PortfolioCard } from "../lib/portfolioCards";
 
 // Textura de grano cinematográfico muy sutil (SVG inline, sin peticiones extra).
 const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E\")";
@@ -16,7 +20,7 @@ const rgba = (hex: string, a: number) => {
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
 };
 
-type Service = typeof premiumServices[number];
+type Service = PortfolioCard;
 
 function ServiceCard({ s, clone, onPlay }: { s: Service; clone?: boolean; onPlay: (s: Service, el: HTMLElement) => void }) {
   const Icon = s.icon;
@@ -24,11 +28,14 @@ function ServiceCard({ s, clone, onPlay }: { s: Service; clone?: boolean; onPlay
     <article className="group h-full">
       <div
         className="flex h-full flex-col overflow-hidden rounded-[26px] bg-white shadow-[0_28px_60px_-30px_rgba(0,0,0,.95)] ring-1 ring-white/10 transition duration-500 hover:-translate-y-1.5 hover:shadow-[0_40px_80px_-32px_rgba(0,0,0,1)] motion-reduce:transition-none">
-        {/* Portada visual (~70%) */}
-        <div className="relative aspect-[6/5] overflow-hidden sm:aspect-square md:aspect-[5/4] lg:aspect-[5/7] xl:aspect-[4/5] 2xl:aspect-[10/9] 3xl:aspect-[7/6]">
-          <img src={s.image} alt={`${s.title}: ${s.description}`} width={800} height={1000} loading="lazy" decoding="async"
-            style={{ objectPosition: s.position, filter: "contrast(1.14) saturate(1.05) brightness(.92)" }}
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.07] motion-reduce:transition-none" />
+        {/* Proporciones más compactas en escritorio para evitar tarjetas demasiado altas. */}
+        <div className="relative aspect-[6/5] shrink-0 overflow-hidden sm:aspect-square md:aspect-[5/4] xl:aspect-[4/3] 2xl:aspect-[3/2]">
+          {s.image ? <picture>
+            {s.imageSources.map(({ media, url }) => <source key={media} media={media} srcSet={url} />)}
+            <img src={s.image} alt={s.imageAlt} width={960} height={800} loading="lazy" decoding="async"
+              style={{ objectPosition: s.position, filter: "contrast(1.14) saturate(1.05) brightness(.92)" }}
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.07] motion-reduce:transition-none" />
+          </picture> : <div className="absolute inset-0 bg-navy" role="img" aria-label={`Sin portada: ${s.title}`} />}
           {/* Tinte de color por card (look cinematográfico unificado) */}
           {s.tint > 0 && <div aria-hidden className="absolute inset-0 mix-blend-color" style={{ background: s.accent, opacity: s.tint }} />}
           {/* Fuga de luz del color de acento */}
@@ -40,37 +47,43 @@ function ServiceCard({ s, clone, onPlay }: { s: Service; clone?: boolean; onPlay
 
           {/* Fila superior: categoría + duración */}
           <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-4">
-            <span className="flex items-center gap-2 rounded-full bg-black/35 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/90 ring-1 ring-white/15 backdrop-blur-md">
-              <Icon size={13} style={{ color: s.accent }} aria-hidden /> {s.category}
-            </span>
-            <span className="rounded-full bg-black/45 px-2.5 py-1 text-[10px] font-semibold tabular-nums text-white ring-1 ring-white/15 backdrop-blur-md">
+            <div className="flex max-w-[75%] flex-wrap gap-2">
+              <span className="flex items-center gap-2 rounded-full bg-black/35 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/90 ring-1 ring-white/15 backdrop-blur-md">
+                <Icon size={13} style={{ color: s.accent }} aria-hidden /> {s.category}
+              </span>
+              {s.featured && <span className="rounded-full bg-black/45 px-2.5 py-1.5 text-[10px] font-semibold text-white ring-1 ring-white/25 backdrop-blur-md">Destacado</span>}
+            </div>
+            {s.duration && <span className="rounded-full bg-black/45 px-2.5 py-1 text-[10px] font-semibold tabular-nums text-white ring-1 ring-white/15 backdrop-blur-md">
               {s.duration}
-            </span>
+            </span>}
           </div>
 
           {/* Fila inferior: título + play */}
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
-            <h3 className="max-w-[68%] hyphens-auto break-words text-[27px] font-extrabold leading-[0.94] tracking-tight text-white lg:text-[24px] xl:text-[27px] 2xl:text-[32px]"
+            <h3 className="max-w-[68%] hyphens-auto break-words text-[27px] lg:line-clamp-3 font-extrabold leading-[0.94] tracking-tight text-white lg:text-[24px] xl:text-[27px] 2xl:text-[32px]"
               style={{ textShadow: "0 2px 24px rgba(0,0,0,.55)" }}>
               {s.title}
             </h3>
-            <button type="button" tabIndex={clone ? -1 : undefined}
+            <button type="button" tabIndex={clone ? -1 : undefined} disabled={!s.video}
+              title={s.video ? undefined : "Video no disponible"}
               onClick={(e) => onPlay(s, e.currentTarget)}
-              aria-label={`Reproducir el video de ${s.title}`}
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/60 backdrop-blur-md transition duration-300 hover:scale-105 hover:bg-white hover:text-ink focus-visible:bg-white focus-visible:text-ink group-hover:scale-105 group-hover:bg-white group-hover:text-ink motion-reduce:transition-none"
+              aria-label={s.video ? `Reproducir el video de ${s.title}` : `Video no disponible para ${s.title}`}
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white/10 disabled:cursor-default disabled:opacity-40 text-white ring-1 ring-white/60 backdrop-blur-md transition duration-300 hover:scale-105 hover:bg-white hover:text-ink focus-visible:bg-white focus-visible:text-ink group-hover:scale-105 group-hover:bg-white group-hover:text-ink motion-reduce:transition-none"
               style={{ boxShadow: `0 0 0 6px ${rgba(s.accent, 0.13)}, 0 12px 30px -10px ${rgba(s.accent, 0.7)}` }}>
               <Play size={15} fill="currentColor" aria-hidden className="translate-x-[1px]" />
             </button>
           </div>
         </div>
 
-        {/* Bloque editorial blanco (~30%) */}
+        {/* El contenido mantiene su altura natural, sin estirar la portada. */}
         <div className="flex flex-1 flex-col bg-[#fbfaf8] p-4">
           <p className="min-h-[24px] text-[9px] font-bold uppercase leading-[1.3] tracking-[0.2em] text-slate-500">
             {s.keywords.join(" · ")}
           </p>
           <span aria-hidden className="mt-1 h-[3px] w-9 rounded-full" style={{ background: s.accent }} />
           <p className="mt-2 line-clamp-3 text-[12px] leading-[1.45] text-slate-600">{s.description}</p>
+          {s.services.length > 0 && <p className="mt-2 text-[10px] leading-relaxed text-slate-500"><span className="font-semibold">Servicios: </span>{s.services.join(" · ")}</p>}
+          {s.publishedAt && s.publishedDate && <time dateTime={s.publishedAt} className="mt-2 text-[10px] text-slate-500">{s.publishedDate}</time>}
           <ul className="mt-auto flex flex-wrap gap-1.5 pt-2.5">
             {s.pills.map(p => (
               <li key={p} className="rounded-full bg-slate-900/[0.06] px-2 py-[1px] text-[9.5px] font-medium text-slate-700 ring-1 ring-slate-900/[0.06] sm:px-2.5 sm:py-[2px] sm:text-[10px] lg:px-2 lg:text-[9.5px]">
@@ -85,7 +98,15 @@ function ServiceCard({ s, clone, onPlay }: { s: Service; clone?: boolean; onPlay
 }
 
 export default function PremiumServices() {
-  const n = premiumServices.length;
+  const { projects, loading, error, retry } = usePortfolioProjects();
+  const cards = useMemo(() => toPortfolioCards(projects, premiumServices), [projects]);
+  return <PremiumServicesContent key={cards.map((card) => card.id).join(",")} cards={cards} loading={loading} error={error} onRetry={retry} />;
+}
+
+function PremiumServicesContent({ cards, loading, error, onRetry }: {
+  cards: PortfolioCard[]; loading: boolean; error: boolean; onRetry: () => void;
+}) {
+  const n = cards.length;
   const [mobile, setMobile] = useState(() => window.matchMedia(MOBILE).matches);
   const [reduce] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   // pos: 1..n = cards reales; 0 y n+1 = clones (para el salto continuo)
@@ -120,6 +141,7 @@ export default function PremiumServices() {
   };
 
   const move = (dir: 1 | -1) => {
+    if (n < 2) return;
     if (locked.current) { queued.current += dir; return; } // nunca se desactivan: se encolan
     locked.current = true;
     setAnimate(true);
@@ -127,27 +149,67 @@ export default function PremiumServices() {
     window.setTimeout(settle, ms + 20);
   };
 
-  const active = ((pos - 1) % n + n) % n;
+  const active = n > 1 ? ((pos - 1) % n + n) % n : 0;
   // En móvil se añaden clones al inicio y al final para que el bucle no tenga corte
-  const slides = mobile ? [premiumServices[n - 1], ...premiumServices, premiumServices[0]] : premiumServices;
+  const slides = mobile && n > 1 ? [cards[n - 1], ...cards, cards[0]] : cards;
 
   /* ---------- Reproductor en ventana modal ---------- */
   const [playing, setPlaying] = useState<Service | null>(null);
   const [closing, setClosing] = useState(false); // true = animación de salida en curso
+  const [videoError, setVideoError] = useState(false);
   const [videoReady, setVideoReady] = useState(false); // póster visible hasta que el video puede reproducirse
+  const [mobilePlayback, setMobilePlayback] = useState(false);
+  const fullscreenRef = useRef<HTMLDivElement>(null);
+  const orientationLocked = useRef(false);
   const openerRef = useRef<HTMLElement | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const exitTimer = useRef<number | null>(null);
 
   const openVideo = (s: Service, el: HTMLElement) => {
+    if (!s.video) return;
     if (exitTimer.current) { window.clearTimeout(exitTimer.current); exitTimer.current = null; }
     openerRef.current = el;
-    setClosing(false);
-    setPlaying(s);
+    const phone = window.matchMedia("(pointer: coarse)").matches
+      && Math.min(window.innerWidth, window.innerHeight) < 768;
+    const show = () => {
+      setVideoReady(false);
+      setVideoError(false);
+      setMobilePlayback(phone);
+      setClosing(false);
+      setPlaying(s);
+    };
+    if (!phone) { show(); return; }
+
+    // Conserva el gesto del usuario para solicitar pantalla completa en móvil.
+    flushSync(show);
+    const player = fullscreenRef.current;
+    const orientation = screen.orientation as ScreenOrientation & {
+      lock?: (orientation: "landscape") => Promise<void>;
+    };
+    if (player?.requestFullscreen) {
+      void player.requestFullscreen().then(async () => {
+        if (fullscreenRef.current !== player || document.fullscreenElement !== player) return;
+        try {
+          await orientation?.lock?.("landscape");
+          if (fullscreenRef.current === player && document.fullscreenElement === player) {
+            orientationLocked.current = typeof orientation?.lock === "function";
+          } else {
+            orientation?.unlock?.();
+          }
+        } catch { /* La rotación visual cubre los navegadores que no permiten bloquear el giro. */ }
+      }).catch(() => { /* El reproductor se gira visualmente si no hay pantalla completa. */ });
+    }
   };
 
   const closeVideo = () => {
+    if (orientationLocked.current) {
+      screen.orientation?.unlock?.();
+      orientationLocked.current = false;
+    }
+    if (document.fullscreenElement === fullscreenRef.current && document.fullscreenElement) {
+      void document.exitFullscreen().catch(() => {});
+    }
     setClosing(true);                            // dispara la animación de salida
     openerRef.current?.focus();                  // devuelve el foco ya mismo
     if (exitTimer.current) window.clearTimeout(exitTimer.current);
@@ -156,14 +218,35 @@ export default function PremiumServices() {
     }, EXIT);
   };
 
+  useEffect(() => {
+    if (!playing || !mobilePlayback) return;
+    const player = fullscreenRef.current;
+    const releaseOrientation = () => {
+      if (document.fullscreenElement !== player && orientationLocked.current) {
+        screen.orientation?.unlock?.();
+        orientationLocked.current = false;
+      }
+    };
+    document.addEventListener("fullscreenchange", releaseOrientation);
+    return () => {
+      document.removeEventListener("fullscreenchange", releaseOrientation);
+      if (orientationLocked.current) screen.orientation?.unlock?.();
+      orientationLocked.current = false;
+      if (document.fullscreenElement === player && player) {
+        void document.exitFullscreen().catch(() => {});
+      }
+    };
+  }, [playing, mobilePlayback]);
+
   // Limpia el temporizador si el componente se desmonta
   useEffect(() => () => { if (exitTimer.current) window.clearTimeout(exitTimer.current); }, []);
 
   // El póster (la portada de la card) se funde cuando el video ya puede reproducirse.
-  // Con red de seguridad a 1,5 s para que el marco nunca se quede tapado.
+  // YouTube confirma la reproducción mediante su API; Vimeo y archivos conservan el respaldo temporal.
   useEffect(() => {
     if (!playing) { setVideoReady(false); return; }
     setVideoReady(false);
+    if (playing.video?.provider === "YouTube") return;
     const t = window.setTimeout(() => setVideoReady(true), 1500);
     return () => window.clearTimeout(t);
   }, [playing]);
@@ -177,7 +260,7 @@ export default function PremiumServices() {
       if (e.key === "Escape") { closeVideo(); return; }
       if (e.key !== "Tab" || !dialogRef.current) return;
       // Foco encerrado dentro de la ventana
-      const focusables = [...dialogRef.current.querySelectorAll<HTMLElement>('button, video, [href], [tabindex]:not([tabindex="-1"])')]
+      const focusables = [...dialogRef.current.querySelectorAll<HTMLElement>('button, video, iframe, [href], [tabindex]:not([tabindex="-1"])')]
         .filter(el => el.offsetParent !== null);
       if (!focusables.length) return;
       const first = focusables[0], last = focusables[focusables.length - 1];
@@ -192,7 +275,7 @@ export default function PremiumServices() {
   useEffect(() => { if (playing) dialogRef.current?.focus(); }, [playing]);
 
   return (
-    <section id="portafolio" className="relative overflow-hidden py-12 lg:py-20"
+    <section id="portafolio" aria-busy={loading} className="relative overflow-hidden py-12 lg:py-20"
       style={{ background: "radial-gradient(130% 100% at 50% 0%, #0a1420 0%, #03060c 55%, #010204 100%)" }}>
       {/* Ambiente: halos de color + grano */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -222,19 +305,25 @@ export default function PremiumServices() {
 
         {/* Galería: grid en desktop, carrusel infinito de 1 card en móvil */}
         <div className="relative mt-12">
+          {!n && (
+            <div className="flex min-h-64 flex-col items-center justify-center gap-4 text-center text-sm text-slate-400" role={error ? "alert" : "status"}>
+              <p>{loading ? "Cargando proyectos…" : error ? "No pudimos cargar los proyectos." : "Pronto encontrarás nuevos proyectos aquí."}</p>
+              {error && !loading && <button type="button" onClick={onRetry} className="btn-ghost">Volver a intentar</button>}
+            </div>
+          )}
           <div className="relative mx-auto max-w-[27rem] overflow-hidden sm:max-w-none sm:overflow-visible">
             <ul
               className={mobile ? "flex" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"}
-              style={mobile ? {
+              style={mobile && n > 1 ? {
                 transform: `translateX(-${pos * 100}%)`,
                 transitionProperty: "transform",
                 transitionTimingFunction: "ease-out",
                 transitionDuration: animate ? `${ms}ms` : "0ms",
               } : undefined}>
               {slides.map((s, k) => {
-                const clone = mobile && (k === 0 || k === slides.length - 1);
+                const clone = mobile && n > 1 && (k === 0 || k === slides.length - 1);
                 return (
-                  <li key={`${s.title}-${k}`} aria-hidden={clone || undefined} className={mobile ? "h-auto w-full shrink-0 px-11" : ""}>
+                  <li key={`${s.id}-${k}`} aria-hidden={clone || undefined} className={mobile ? "h-auto w-full shrink-0 px-11" : ""}>
                     <Reveal delay={(k % n) * 110} className="h-full">
                       <ServiceCard s={s} clone={clone} onPlay={openVideo} />
                     </Reveal>
@@ -244,7 +333,7 @@ export default function PremiumServices() {
             </ul>
 
             {/* Flechas: siempre activas (el bucle es infinito en ambos sentidos) */}
-            {mobile && (
+            {mobile && n > 1 && (
               <>
                 <button type="button" onClick={() => move(-1)} aria-label="Ver el servicio anterior"
                   className="absolute left-0 top-[38%] z-20 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white ring-1 ring-white/25 backdrop-blur-md transition duration-300 hover:bg-black/75 active:scale-90 motion-reduce:transition-none">
@@ -259,10 +348,10 @@ export default function PremiumServices() {
           </div>
 
           {/* Indicador de posición (solo móvil) */}
-          {mobile && (
+          {mobile && n > 1 && (
             <div className="mt-5 flex items-center justify-center gap-1.5">
-              {premiumServices.map((s, k) => (
-                <span key={s.title} aria-hidden
+              {cards.map((s, k) => (
+                <span key={s.id} aria-hidden
                   className={`h-1.5 rounded-full transition-all duration-300 ${k === active ? "w-5 bg-white/85" : "w-1.5 bg-white/25"}`} />
               ))}
               <span className="sr-only" aria-live="polite">{`Servicio ${active + 1} de ${n}`}</span>
@@ -272,32 +361,52 @@ export default function PremiumServices() {
       </div>
 
       {/* Ventana de reproducción: centrada, por encima de todo (z-100 > header z-50) */}
-      {playing && createPortal(
-        <div onClick={closeVideo}
+      {playing?.video && createPortal(
+        <div ref={fullscreenRef} onClick={closeVideo}
           className={`fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-4 backdrop-blur-md sm:p-6 ${closing ? "pointer-events-none animate-fadeout" : "animate-fadein"}`}>
-          <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Video: ${playing.title}`}
-            onClick={(e) => e.stopPropagation()}
-            className={`relative w-full max-w-4xl transform-gpu outline-none ${closing ? "animate-modalout" : "animate-modalin"}`}>
-            <div className="relative overflow-hidden rounded-2xl bg-black ring-1 ring-white/15"
-              style={{ boxShadow: `0 0 0 1px ${rgba(playing.accent, 0.35)}, 0 40px 120px -40px ${rgba(playing.accent, 0.55)}` }}>
-              {/* La portada de la card hace de póster: el marco nunca queda en negro y el video entra con un fundido cruzado */}
-              <img src={playing.image} alt="" aria-hidden
-                className={`pointer-events-none absolute inset-0 z-10 h-full w-full object-cover transition-opacity duration-700 ease-out ${videoReady ? "opacity-0" : "opacity-100"}`} />
-              <video ref={videoRef} src={playing.video} poster={playing.image} controls autoPlay playsInline preload="metadata"
-                onLoadedData={() => setVideoReady(true)} onCanPlay={() => setVideoReady(true)} onPlaying={() => setVideoReady(true)}
-                onError={() => setVideoReady(false)}
-                className="aspect-video max-h-[70svh] w-full bg-black object-contain" />
-            </div>
-            <div className="mt-3 flex items-start justify-between gap-4">
-              <p className="text-sm leading-tight">
-                <span className="font-semibold text-white">{playing.title}</span>
-                <span aria-hidden className="mx-2 text-white/30">·</span>
-                <span className="text-[10px] uppercase tracking-[0.18em] text-white/60">{playing.category}</span>
-              </p>
-              <button type="button" onClick={closeVideo}
-                className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold text-white transition duration-300 hover:bg-white/10 motion-reduce:transition-none">
-                <X size={14} aria-hidden /> Cerrar
-              </button>
+          {/* En móviles sin bloqueo de orientación, gira solo el reproductor en vertical. */}
+          <div className={`flex w-full items-center justify-center ${mobilePlayback ? "[@media(orientation:portrait)]:absolute [@media(orientation:portrait)]:left-1/2 [@media(orientation:portrait)]:top-1/2 [@media(orientation:portrait)]:w-[calc(100dvh-2rem)] [@media(orientation:portrait)]:-translate-x-1/2 [@media(orientation:portrait)]:-translate-y-1/2 [@media(orientation:portrait)]:rotate-90" : ""}`}>
+            <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Video: ${playing.title}`}
+              onClick={(e) => e.stopPropagation()}
+              className={`relative w-full max-w-4xl transform-gpu outline-none ${closing ? "animate-modalout" : "animate-modalin"}`}>
+              <div className={`relative aspect-video max-h-[70svh] overflow-hidden rounded-2xl bg-black ring-1 ring-white/15 ${mobilePlayback ? "[@media(orientation:portrait)]:max-h-[calc(100dvw-6rem)]" : ""}`}
+                style={{ boxShadow: `0 0 0 1px ${rgba(playing.accent, 0.35)}, 0 40px 120px -40px ${rgba(playing.accent, 0.55)}` }}>
+                <VideoOpening key={playing.id} poster={playing.poster} title={playing.title}
+                  category={playing.category} accent={playing.accent} grain={GRAIN}
+                  ready={videoReady} failed={videoError} reducedMotion={reduce} />
+                {playing.video.provider === "YouTube" ? (
+                  <YouTubeEmbed src={playing.video.url} title={`Reproducir ${playing.title}`}
+                    onReveal={() => setVideoReady(true)}
+                    onError={() => { setVideoReady(true); setVideoError(true); }} />
+                ) : playing.video.kind === "embed" ? (
+                  <iframe key={playing.video.url} src={playing.video.url} title={`Reproducir ${playing.title}`}
+                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowFullScreen
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    onLoad={() => setVideoReady(true)} onError={() => { setVideoReady(true); setVideoError(true); }}
+                    className="absolute inset-0 h-full w-full border-0" />
+                ) : (
+                  <video key={playing.video.url} ref={videoRef} src={playing.video.url} poster={playing.poster ?? undefined} controls autoPlay playsInline preload="metadata"
+                    onLoadedData={() => setVideoReady(true)} onCanPlay={() => setVideoReady(true)} onPlaying={() => setVideoReady(true)}
+                    onError={() => { setVideoReady(true); setVideoError(true); }}
+                    className="absolute inset-0 h-full w-full bg-black object-contain" />
+                )}
+                {videoError && <div role="alert" className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/90 p-6 text-center text-sm text-white">
+                  <p>No pudimos reproducir este video.</p>
+                  <a href={playing.video.originalUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Abrir el video</a>
+                </div>}
+              </div>
+              <div className="mt-3 flex items-start justify-between gap-4">
+                <div className="text-sm leading-tight">
+                  <p><span className="font-semibold text-white">{playing.title}</span>
+                  <span aria-hidden className="mx-2 text-white/30">·</span>
+                  <span className="text-[10px] uppercase tracking-[0.18em] text-white/60">{playing.category}</span></p>
+                  {playing.video.provider && <a href={playing.video.originalUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs text-white/70 underline underline-offset-4 hover:text-white">Ver en {playing.video.provider}</a>}
+                </div>
+                <button type="button" onClick={closeVideo}
+                  className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold text-white transition duration-300 hover:bg-white/10 motion-reduce:transition-none">
+                  <X size={14} aria-hidden /> Cerrar
+                </button>
+              </div>
             </div>
           </div>
         </div>, document.body)}

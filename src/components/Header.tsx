@@ -9,15 +9,16 @@ export default function Header() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const sections = nav.flatMap(([, href]) => {
-      const element = document.getElementById(href.slice(1));
-      return element ? [{ href, element }] : [];
-    });
     let frame: number | null = null;
 
     const update = () => {
       frame = null;
       setSolid(window.scrollY > 40);
+      // Sanity puede reemplazar una sección al cargar: mide siempre los nodos actuales.
+      const sections = nav.flatMap(([, href]) => {
+        const element = document.getElementById(href.slice(1));
+        return element ? [{ href, element }] : [];
+      });
       // Detecta la sección en la zona de lectura, por debajo de la barra fija.
       const readingLine = (headerRef.current?.getBoundingClientRect().bottom ?? 64)
         + Math.min(160, window.innerHeight * 0.18);
@@ -39,11 +40,16 @@ export default function Header() {
     window.addEventListener("resize", scheduleUpdate);
     const observer = new ResizeObserver(scheduleUpdate);
     const main = document.querySelector("main");
-    if (main) observer.observe(main);
+    const contentObserver = new MutationObserver(scheduleUpdate);
+    if (main) {
+      observer.observe(main);
+      contentObserver.observe(main, {childList: true, subtree: true});
+    }
     return () => {
       window.removeEventListener("scroll", scheduleUpdate);
       window.removeEventListener("resize", scheduleUpdate);
       observer.disconnect();
+      contentObserver.disconnect();
       if (frame !== null) window.cancelAnimationFrame(frame);
     };
   }, []);
