@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createPortal, flushSync } from "react-dom";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { ArrowRight, ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 import Reveal from "./Reveal";
@@ -162,9 +162,6 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
   const [closing, setClosing] = useState(false); // true = animación de salida en curso
   const [videoError, setVideoError] = useState(false);
   const [videoReady, setVideoReady] = useState(false); // póster visible hasta que el video puede reproducirse
-  const [mobilePlayback, setMobilePlayback] = useState(false);
-  const fullscreenRef = useRef<HTMLDivElement>(null);
-  const orientationLocked = useRef(false);
   const openerRef = useRef<HTMLElement | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -174,46 +171,13 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
     if (!s.video) return;
     if (exitTimer.current) { window.clearTimeout(exitTimer.current); exitTimer.current = null; }
     openerRef.current = el;
-    const phone = window.matchMedia("(pointer: coarse)").matches
-      && Math.min(window.innerWidth, window.innerHeight) < 768;
-    const show = () => {
-      setVideoReady(false);
-      setVideoError(false);
-      setMobilePlayback(phone);
-      setClosing(false);
-      setPlaying(s);
-    };
-    if (!phone) { show(); return; }
-
-    // Conserva el gesto del usuario para solicitar pantalla completa en móvil.
-    flushSync(show);
-    const player = fullscreenRef.current;
-    const orientation = screen.orientation as ScreenOrientation & {
-      lock?: (orientation: "landscape") => Promise<void>;
-    };
-    if (player?.requestFullscreen) {
-      void player.requestFullscreen().then(async () => {
-        if (fullscreenRef.current !== player || document.fullscreenElement !== player) return;
-        try {
-          await orientation?.lock?.("landscape");
-          if (fullscreenRef.current === player && document.fullscreenElement === player) {
-            orientationLocked.current = typeof orientation?.lock === "function";
-          } else {
-            orientation?.unlock?.();
-          }
-        } catch { /* La rotación visual cubre los navegadores que no permiten bloquear el giro. */ }
-      }).catch(() => { /* El reproductor se gira visualmente si no hay pantalla completa. */ });
-    }
+    setVideoReady(false);
+    setVideoError(false);
+    setClosing(false);
+    setPlaying(s);
   };
 
   const closeVideo = () => {
-    if (orientationLocked.current) {
-      screen.orientation?.unlock?.();
-      orientationLocked.current = false;
-    }
-    if (document.fullscreenElement === fullscreenRef.current && document.fullscreenElement) {
-      void document.exitFullscreen().catch(() => {});
-    }
     setClosing(true);                            // dispara la animación de salida
     openerRef.current?.focus();                  // devuelve el foco ya mismo
     if (exitTimer.current) window.clearTimeout(exitTimer.current);
@@ -221,26 +185,6 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
       setPlaying(null); setClosing(false); exitTimer.current = null;
     }, EXIT);
   };
-
-  useEffect(() => {
-    if (!playing || !mobilePlayback) return;
-    const player = fullscreenRef.current;
-    const releaseOrientation = () => {
-      if (document.fullscreenElement !== player && orientationLocked.current) {
-        screen.orientation?.unlock?.();
-        orientationLocked.current = false;
-      }
-    };
-    document.addEventListener("fullscreenchange", releaseOrientation);
-    return () => {
-      document.removeEventListener("fullscreenchange", releaseOrientation);
-      if (orientationLocked.current) screen.orientation?.unlock?.();
-      orientationLocked.current = false;
-      if (document.fullscreenElement === player && player) {
-        void document.exitFullscreen().catch(() => {});
-      }
-    };
-  }, [playing, mobilePlayback]);
 
   // Limpia el temporizador si el componente se desmonta
   useEffect(() => () => { if (exitTimer.current) window.clearTimeout(exitTimer.current); }, []);
@@ -368,14 +312,14 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
 
       {/* Ventana de reproducción: centrada, por encima de todo (z-100 > header z-50) */}
       {playing?.video && createPortal(
-        <div ref={fullscreenRef} onClick={closeVideo}
+        <div onClick={closeVideo}
           className={`fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-4 backdrop-blur-md sm:p-6 ${closing ? "pointer-events-none animate-fadeout" : "animate-fadein"}`}>
-          {/* En móviles sin bloqueo de orientación, gira solo el reproductor en vertical. */}
-          <div className={`flex w-full items-center justify-center ${mobilePlayback ? "[@media(orientation:portrait)]:absolute [@media(orientation:portrait)]:left-1/2 [@media(orientation:portrait)]:top-1/2 [@media(orientation:portrait)]:w-[calc(100dvh-2rem)] [@media(orientation:portrait)]:-translate-x-1/2 [@media(orientation:portrait)]:-translate-y-1/2 [@media(orientation:portrait)]:rotate-90" : ""}`}>
+          {/* El reproductor se adapta al ancho disponible y conserva la orientación del dispositivo. */}
+          <div className="flex w-full items-center justify-center">
             <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Video: ${playing.title}`}
               onClick={(e) => e.stopPropagation()}
               className={`relative w-full max-w-4xl transform-gpu outline-none ${closing ? "animate-modalout" : "animate-modalin"}`}>
-              <div className={`relative aspect-video max-h-[70svh] overflow-hidden rounded-2xl bg-black ring-1 ring-white/15 ${mobilePlayback ? "[@media(orientation:portrait)]:max-h-[calc(100dvw-6rem)]" : ""}`}
+              <div className="relative aspect-video max-h-[70svh] overflow-hidden rounded-2xl bg-black ring-1 ring-white/15"
                 style={{ boxShadow: `0 0 0 1px ${rgba(playing.accent, 0.35)}, 0 40px 120px -40px ${rgba(playing.accent, 0.55)}` }}>
                 <VideoOpening key={playing.id} poster={playing.poster} title={playing.title}
                   category={playing.category} accent={playing.accent} grain={GRAIN}
