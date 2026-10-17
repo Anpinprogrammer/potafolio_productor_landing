@@ -230,13 +230,14 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
 
   return (
     <section id="portafolio" aria-label={collection === "all" ? "Todos los proyectos del portafolio" : "Proyectos destacados"} aria-busy={loading}
-      className={`relative overflow-hidden ${collection === "all" ? "pb-20 pt-8" : "py-12 lg:py-20"}`}
-      style={collection === "featured" ? { background: "linear-gradient(to bottom, #0b2417 0%, #07190f 55%, #041009 90%, #010204 100%)" } : undefined}>
+      className={`relative overflow-hidden ${collection === "all" ? "pb-20 pt-8" : "bg-[#0A0A0C] pb-12 pt-28 lg:pb-20"}`}>
+      {collection === "featured" && <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />}
+      {collection === "featured" && <div aria-hidden="true" className="pointer-events-none absolute -top-10 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-brand/[0.15] blur-[120px]" />}
       {/* Ambiente: halos de color + grano */}
       <div aria-hidden className="pointer-events-none absolute inset-0"
         style={{ maskImage: "linear-gradient(to bottom, transparent 0%, black 160px)" }}>
-        <div className="absolute -top-40 left-1/2 h-[540px] w-[900px] -translate-x-1/2 rounded-full bg-brand/25 blur-[140px]" />
-        <div className="absolute -bottom-32 -right-24 h-[420px] w-[560px] rounded-full bg-brand2/40 blur-[130px]" />
+        {collection === "all" && <div className="absolute -top-40 left-1/2 h-[540px] w-[900px] -translate-x-1/2 rounded-full bg-brand/25 blur-[140px]" />}
+        <div className={`absolute -bottom-32 -right-24 h-[420px] w-[560px] rounded-full blur-[130px] ${collection === "featured" ? "bg-zinc-900/30" : "bg-brand2/40"}`} />
         <div className="absolute inset-0 opacity-[0.05] mix-blend-soft-light" style={{ backgroundImage: GRAIN }} />
       </div>
 
@@ -244,11 +245,12 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
         {/* Cabecera editorial */}
         {collection === "featured" && <div className="flex flex-col gap-8 border-b border-white/10 pb-9 lg:flex-row lg:items-end lg:justify-between">
           <Reveal className="max-w-2xl">
-            <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-brand">
-              <span aria-hidden className="h-px w-10 bg-brand/60" /> Proyectos destacados <span aria-hidden className="h-px w-10 bg-brand/60" />
+            <p className="inline-flex w-fit items-center gap-2.5 rounded-full border border-zinc-800 bg-zinc-900/80 px-4 py-2 text-xs font-medium uppercase tracking-wider text-zinc-400 backdrop-blur-md">
+              <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+              Proyectos destacados
             </p>
             <h2 className="mt-4 text-3xl md:text-4xl font-extrabold leading-[1.06] text-white lg:text-5xl">
-              Cada proyecto, <span className="font-script text-[2.38rem] font-normal text-brand md:text-[3.4rem]">una película</span>
+              Cada proyecto, <span className="font-script text-[2.38rem] font-normal text-brand drop-shadow-[0_0_10px_rgba(20,107,58,0.4)] md:text-[3.4rem]">una película</span>
             </h2>
             <p className="mt-4 max-w-xl text-slate-400">
               Una selección de mis proyectos destacados: del viaje que inspira al anuncio que convierte. Dirección, edición y color con acabado de cine.
