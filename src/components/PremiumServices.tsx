@@ -122,6 +122,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
   const locked = useRef(false);
   const queued = useRef(0);
   const [dragOffset, setDragOffset] = useState(0);
+  const trackRef = useRef<HTMLUListElement>(null);
   const gesture = useRef<{
     pointerId: number; x: number; y: number; offset: number; axis: "horizontal" | "vertical" | null;
   } | null>(null);
@@ -173,8 +174,10 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
     const dx = event.clientX - current.x;
     const dy = event.clientY - current.y;
     if (!current.axis) {
-      if (Math.max(Math.abs(dx), Math.abs(dy)) < 8) return;
-      current.axis = Math.abs(dx) > Math.abs(dy) ? "horizontal" : "vertical";
+      // Tolera la pequeña desviación vertical al empezar un deslizamiento lateral.
+      if (Math.abs(dx) >= 8 && Math.abs(dx) >= Math.abs(dy) * 0.8) current.axis = "horizontal";
+      else if (Math.abs(dy) >= 16 && Math.abs(dy) > Math.abs(dx) * 1.5) current.axis = "vertical";
+      else return;
       if (current.axis === "horizontal") {
         event.currentTarget.setPointerCapture(event.pointerId);
         suppressClick.current = true;
@@ -205,6 +208,24 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
     gesture.current = null;
     setDragOffset(0);
   }, [carousel]);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!carousel || n < 2 || !track) return;
+    // React usa listeners touch pasivos: el listener nativo permite frenar el
+    // scroll de la página solo cuando el usuario está arrastrando horizontalmente.
+    const preventHorizontalScroll = (event: TouchEvent) => {
+      const current = gesture.current;
+      if (!current || event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      const dx = Math.abs(touch.clientX - current.x);
+      const dy = Math.abs(touch.clientY - current.y);
+      if (event.cancelable && (current.axis === "horizontal" ||
+        (!current.axis && dx >= 8 && dx >= dy * 0.8))) event.preventDefault();
+    };
+    track.addEventListener("touchmove", preventHorizontalScroll, { passive: false });
+    return () => track.removeEventListener("touchmove", preventHorizontalScroll);
+  }, [carousel, n]);
 
   const active = n > 1 ? ((pos - 1) % n + n) % n : 0;
   // En móvil se añaden clones al inicio y al final para que el bucle no tenga corte
@@ -320,6 +341,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
           )}
           <div className={collection === "all" ? "relative" : "relative mx-auto max-w-[27rem] overflow-hidden sm:max-w-none sm:overflow-visible"}>
             <ul
+              ref={trackRef}
               onPointerDown={startDrag}
               onPointerMove={updateDrag}
               onPointerUp={finishDrag}
@@ -339,7 +361,6 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
               }}
               className={collection === "all" ? "grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3" : carousel ? "flex" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"}
               style={carousel && n > 1 ? {
-                touchAction: "pan-y pinch-zoom",
                 userSelect: "none",
                 transform: `translateX(calc(-${pos * 100}% + ${dragOffset}px))`,
                 transitionProperty: "transform",
