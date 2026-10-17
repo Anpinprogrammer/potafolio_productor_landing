@@ -22,7 +22,7 @@ const socialLinks = [
   { label: "WhatsApp", href: `https://wa.me/${PHONE}?text=${encodeURIComponent(MESSAGE)}`, icon: WhatsAppIcon },
 ];
 
-const linkClassName = "rounded-sm transition-colors hover:text-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-400 motion-reduce:transition-none";
+const linkClassName = "rounded-sm transition-colors hover:text-white focus-visible:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none";
 
 export default function Footer() {
   const scrollToTop = () => {
