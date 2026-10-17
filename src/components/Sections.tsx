@@ -12,7 +12,6 @@ import { useServices } from "../lib/useServices";
 import { getServiceIcon } from "../lib/serviceIcons";
 import { formatServiceTitle, type Service } from "../lib/services";
 import ServiceModal from "./ServiceModal";
-import BrandLogo from "./BrandLogo";
 import { PHONE, EMAIL, MESSAGE, formatearTelefono } from "../utils";
 import "./Hero.css";
 import "./BrandCards.css";
@@ -278,13 +277,4 @@ export const Contact = () => (
       </div>
     </Reveal>
   </section>
-);
-
-export const Footer = () => (
-  <footer className="border-t border-white/10 bg-ink py-8 text-sm text-slate-500">
-    <div className="wrap flex flex-col items-center justify-between gap-3 md:flex-row">
-      <BrandLogo className="h-10 md:h-12 lg:h-14 w-auto" />
-      <p>© {new Date().getFullYear()} Yamamoto. Todos los derechos reservados.</p>
-    </div>
-  </footer>
 );

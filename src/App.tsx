@@ -4,7 +4,8 @@ import Header from "./components/Header";
 import LogoIntro from "./components/LogoIntro";
 import WhatsAppButton from "./components/WhatsAppButton";
 import PremiumServices from "./components/PremiumServices";
-import { Hero, Services, About, Process, Testimonials, Contact, Footer } from "./components/Sections";
+import { Hero, Services, About, Process, Testimonials, Contact } from "./components/Sections";
+import Footer from "./components/Footer";
 import ProjectsPage from "./pages/ProjectsPage";
 import { keepSectionAligned, replaySection } from "./lib/sectionNavigation";
 
