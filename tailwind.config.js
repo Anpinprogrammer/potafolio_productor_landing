@@ -16,6 +16,7 @@ export default {
       fadeout: { from: { opacity: "1" }, to: { opacity: "0" } },
     },
     animation: {
+      loadThenFloat : "rise 1s ease-out forwards, float 3s ease-in-out infinite 1s",
       float: "float 5s ease-in-out infinite", rise: "rise .9s ease-out both", marquee: "marquee 15s linear infinite",
       fadehero: "fadehero 1.4s ease-out both",
       // curvas suaves (nada de expo-out): con una curva agresiva el fundido llega al 80% en 60ms y se ve como un corte

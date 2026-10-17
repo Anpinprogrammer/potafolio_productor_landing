@@ -69,7 +69,7 @@ export const Hero = () => {
     </div>
     {/** 
     <ToolsMarquee />*/}
-    <p aria-hidden className="absolute bottom-16 right-16 hidden -rotate-6 animate-float font-script text-4xl text-brand/90 lg:block">Mejores videos,<br />mayor impacto</p>
+    <p aria-hidden className="absolute bottom-16 right-16 hidden -rotate-6 animate-loadThenFloat font-script text-4xl text-brand/90 lg:block">Mejores videos,<br />mayor impacto</p>
   </div></section>
   );
 };
