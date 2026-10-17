@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Play, Zap, ShieldCheck, MessageCircle, Mail, Star, Quote, Clapperboard } from "lucide-react";
 import Reveal from "./Reveal";
@@ -119,7 +120,10 @@ export const Services = () => {
                   <Reveal dir="zoom" delay={i * 90} className="h-full">
                     <article className="group relative flex h-full min-h-[12rem] flex-col rounded-2xl border border-zinc-800 bg-zinc-900 p-5 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-emerald-500/30 hover:shadow-[0_0_20px_rgba(16,185,129,0.05)] focus-within:border-emerald-500/50 motion-reduce:transform-none motion-reduce:transition-none xl:p-6">
                       <button type="button" aria-haspopup="dialog" aria-label={`Ver detalles de ${formatServiceTitle(title)}`}
-                        onClick={(event) => setSelected({ service, opener: event.currentTarget })}
+                        onClick={(event) => {
+                          const opener = event.currentTarget;
+                          flushSync(() => setSelected({ service, opener }));
+                        }}
                         className="absolute inset-0 z-10 cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-500" />
                       <Icon size={28} strokeWidth={1.9} className="service-card-accent mb-5 shrink-0 transition-colors duration-300" aria-hidden />
                       <h3 className="break-words text-base font-semibold leading-snug tracking-tight text-white">{formatServiceTitle(title)}</h3>

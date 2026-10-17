@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { createPortal, flushSync } from "react-dom";
 import { Link } from "react-router-dom";
 import { ArrowRight, ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 import Reveal from "./Reveal";
@@ -173,11 +173,14 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
     if (!s.video) return;
     if (exitTimer.current) { window.clearTimeout(exitTimer.current); exitTimer.current = null; }
     openerRef.current = el;
-    setStartMuted(shouldStartMuted());
-    setVideoReady(false);
-    setVideoError(false);
-    setClosing(false);
-    setPlaying(s);
+    // Monta el reproductor inline durante el toque, sin solicitar pantalla completa ni giros.
+    flushSync(() => {
+      setStartMuted(shouldStartMuted());
+      setVideoReady(false);
+      setVideoError(false);
+      setClosing(false);
+      setPlaying(s);
+    });
   };
 
   const closeVideo = () => {
@@ -204,7 +207,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
 
   useEffect(() => {
     if (!playing) return;
-    videoRef.current?.play().catch(() => { /* el usuario tiene los controles */ });
+    videoRef.current?.play().catch(() => { setVideoReady(true); /* Deja visibles los controles si iOS bloquea el autoplay. */ });
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden"; // sin scroll de fondo mientras se reproduce
     const onKey = (e: KeyboardEvent) => {
