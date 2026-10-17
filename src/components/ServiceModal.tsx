@@ -71,7 +71,7 @@ export default function ServiceModal({ service, opener, onDismiss }: Props) {
       <div ref={panel} className={`relative max-h-[calc(100dvh-2rem)] w-full max-w-3xl overflow-y-auto rounded-3xl border border-zinc-800 bg-zinc-900 shadow-2xl sm:max-h-[calc(100dvh-3rem)] ${closing ? "animate-modalout" : "animate-modalin"}`}>
         <div className="sticky top-0 z-20 flex items-start justify-between gap-4 border-b border-white/10 bg-zinc-900/95 p-5 backdrop-blur-md sm:p-6">
           <div>
-            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-emerald-400">Conoce el servicio</p>
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-brand">Conoce el servicio</p>
             <h2 id={`${id}-title`} className="text-2xl font-bold leading-tight tracking-tight sm:text-3xl">{title}</h2>
           </div>
           <button type="button" autoFocus onClick={() => close()} aria-label="Cerrar detalles del servicio"
@@ -88,7 +88,7 @@ export default function ServiceModal({ service, opener, onDismiss }: Props) {
                 className="absolute inset-0 h-full w-full border-0" />
             ) : !closing && (
               <div role="status" className="flex h-full flex-col items-center justify-center gap-3 p-5 text-center text-sm text-zinc-400">
-                <Play size={28} className="text-emerald-400" aria-hidden />
+                <Play size={28} className="text-brand" aria-hidden />
                 <p>{failed ? "No pudimos cargar la demostración. Puedes abrir el video en su plataforma." : "Pronto podrás ver una demostración de este servicio. Mientras tanto, cuéntame tu idea."}</p>
               </div>
             )}
@@ -101,12 +101,12 @@ export default function ServiceModal({ service, opener, onDismiss }: Props) {
             Abrir en {video.provider} <ExternalLink size={13} aria-hidden />
           </a>}
           <div className="mt-7">
-            <h3 className="text-sm font-semibold text-emerald-300">Así trabajaremos</h3>
+            <h3 className="text-sm font-semibold text-brand">Así trabajaremos</h3>
             <p id={`${id}-workflow`} className="mt-3 whitespace-pre-line text-sm leading-relaxed text-zinc-300">
               {service.workflow?.trim() || "Revisamos tu idea, los materiales y las referencias para definir el enfoque y los tiempos. Preparo una primera versión, ajustamos los detalles con tus comentarios y entrego el resultado final en el formato acordado."}
             </p>
           </div>
-          <button type="button" onClick={() => close(true)} className="group mt-7 inline-flex w-full items-center justify-center gap-3 rounded-full bg-emerald-600 px-6 py-3.5 font-semibold text-white shadow-lg shadow-emerald-900/30 transition-colors hover:bg-emerald-500 sm:w-auto">
+          <button type="button" onClick={() => close(true)} className="group mt-7 btn-primary sm:w-auto">
             Cotizar este servicio <ArrowRight size={18} aria-hidden className="transition-transform group-hover:translate-x-1 motion-reduce:transform-none" />
           </button>
         </div>

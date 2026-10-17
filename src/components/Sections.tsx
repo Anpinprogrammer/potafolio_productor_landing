@@ -11,6 +11,7 @@ import ServiceModal from "./ServiceModal";
 import BrandLogo from "./BrandLogo";
 import { PHONE, EMAIL, MESSAGE, formatearTelefono } from "../utils";
 import "./Hero.css";
+import "./BrandCards.css";
 
 export const Hero = () => {
   const imageRef = useRef<HTMLImageElement>(null);
@@ -120,10 +121,10 @@ export const Services = () => {
                       <button type="button" aria-haspopup="dialog" aria-label={`Ver detalles de ${formatServiceTitle(title)}`}
                         onClick={(event) => setSelected({ service, opener: event.currentTarget })}
                         className="absolute inset-0 z-10 cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-500" />
-                      <Icon size={28} strokeWidth={1.7} className="mb-5 shrink-0 text-emerald-400" aria-hidden />
+                      <Icon size={28} strokeWidth={1.9} className="service-card-accent mb-5 shrink-0 transition-colors duration-300" aria-hidden />
                       <h3 className="break-words text-base font-semibold leading-snug tracking-tight text-white">{formatServiceTitle(title)}</h3>
                       <p className="mt-2 break-words text-sm leading-relaxed text-zinc-400">{description}</p>
-                      <span aria-hidden="true" className="mt-auto flex items-center gap-2 pt-5 text-xs font-medium text-emerald-400"><Play size={14} /> Conocer el servicio <ArrowRight size={14} className="transition-transform group-hover:translate-x-1 motion-reduce:transform-none" /></span>
+                      <span aria-hidden="true" className="service-card-accent mt-auto flex items-center gap-2 pt-5 text-xs font-semibold transition-colors duration-300"><Play size={14} /> Conocer el servicio <ArrowRight size={14} className="transition-transform group-hover:translate-x-1 motion-reduce:transform-none" /></span>
                     </article>
                   </Reveal>
                 </li>
@@ -211,18 +212,17 @@ export const Process = () => (
         {steps.map(({ icon: I, t, d }, i) => (
           <li key={t} className="h-full min-w-0">
             <Reveal delay={i * 120} className="h-full">
-              <article className="group relative isolate flex h-full min-h-[16rem] flex-col overflow-hidden rounded-2xl border border-white/10 bg-navy p-6 shadow-[0_12px_28px_-16px_rgba(7,12,28,0.45)] transition duration-300 hover:-translate-y-1 hover:border-brand/50 hover:shadow-[0_20px_36px_-20px_rgba(11,61,46,0.5)] motion-reduce:transform-none motion-reduce:transition-none">
-                <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgba(20,107,58,0.2),transparent_65%)]" />
+              <article className="brand-card group relative isolate flex h-full min-h-[16rem] flex-col overflow-hidden rounded-2xl border p-6 transition duration-300 hover:-translate-y-1 motion-reduce:transform-none motion-reduce:transition-none">
                 <div className="flex items-center justify-between gap-4">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-300/15 bg-emerald-300/10 text-emerald-300">
+                  <span className="brand-card__icon-tile flex h-12 w-12 items-center justify-center rounded-xl border">
                     <I size={23} strokeWidth={1.7} aria-hidden />
                   </span>
-                  <span aria-hidden="true" className="text-4xl font-extrabold tabular-nums tracking-tight text-white/15">0{i + 1}</span>
+                  <span aria-hidden="true" className="brand-card__number text-4xl font-extrabold tabular-nums tracking-tight">0{i + 1}</span>
                 </div>
                 <h3 className="mt-7 text-lg font-semibold leading-snug text-white">{t}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-slate-400">{d}</p>
+                <p className="mt-3 text-sm leading-relaxed text-zinc-300">{d}</p>
                 <div aria-hidden="true" className="mt-auto pt-6">
-                  <span className="block h-0.5 w-10 rounded-full bg-emerald-300/60 transition-all duration-300 group-hover:w-16 group-hover:bg-emerald-300 motion-reduce:transition-none" />
+                  <span className="brand-card__rule block h-0.5 w-10 rounded-full opacity-60 transition-all duration-300 group-hover:w-16 group-hover:opacity-100 motion-reduce:transition-none" />
                 </div>
               </article>
             </Reveal>
