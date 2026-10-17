@@ -3,6 +3,8 @@ import { useEffect, useRef } from "react";
 interface Player {
   destroy(): void;
   getIframe(): HTMLIFrameElement;
+  mute(): void;
+  playVideo(): void;
 }
 interface YouTubeApi {
   Player: new (element: HTMLElement, options: {
@@ -12,6 +14,7 @@ interface YouTubeApi {
     height: string;
     playerVars: Record<string, string | number>;
     events: {
+      onReady(event: { target: Player }): void;
       onStateChange(event: { data: number }): void;
       onAutoplayBlocked(): void;
       onError(): void;
@@ -51,8 +54,8 @@ function loadYouTubeApi(): Promise<YouTubeApi> {
 }
 
 /** Retira la portada cuando comienza la reproducción, no al cargar el iframe. */
-export default function YouTubeEmbed({ src, title, onReveal, onError }: {
-  src: string; title: string; onReveal: () => void; onError: () => void;
+export default function YouTubeEmbed({ src, title, onReveal, onError, startMuted = false }: {
+  src: string; title: string; onReveal: () => void; onError: () => void; startMuted?: boolean;
 }) {
   const container = useRef<HTMLDivElement>(null);
   const callbacks = useRef({ onReveal, onError });
@@ -84,11 +87,17 @@ export default function YouTubeEmbed({ src, title, onReveal, onError }: {
         host: url.origin,
         width: "100%", height: "100%",
         playerVars: {
-          autoplay: 1, controls: 1, playsinline: 1, rel: 0,
+          autoplay: startMuted ? 0 : 1, controls: 1, playsinline: 1, rel: 0,
           origin: window.location.origin,
           start: Number(url.searchParams.get("start") || 0),
         },
         events: {
+          onReady: ({ target }) => {
+            if (!active || !startMuted) return;
+            // Silencia antes del primer intento de reproducción para respetar la política móvil.
+            target.mute();
+            target.playVideo();
+          },
           onStateChange: ({ data }) => { if (data === 1 || data === 2) reveal(); },
           onAutoplayBlocked: reveal,
           onError: fail,
@@ -106,7 +115,7 @@ export default function YouTubeEmbed({ src, title, onReveal, onError }: {
       player?.destroy();
       host.replaceChildren();
     };
-  }, [src, title]);
+  }, [src, title, startMuted]);
 
   return <div ref={container} className="absolute inset-0 h-full w-full" />;
 }

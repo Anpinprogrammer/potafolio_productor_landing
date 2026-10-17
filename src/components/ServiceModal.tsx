@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import { ArrowRight, ExternalLink, LoaderCircle, Play, X } from "lucide-react";
 import { formatServiceTitle, type Service } from "../lib/services";
 import { resolveVideo } from "../lib/portfolioMedia";
+import { getAutoplayUrl, shouldStartMuted } from "../lib/videoAutoplay";
+import YouTubeEmbed from "./YouTubeEmbed";
 
 type Props = {
   service: Service;
@@ -19,6 +21,7 @@ export default function ServiceModal({ service, opener, onDismiss }: Props) {
   const [closing, setClosing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+  const [startMuted] = useState(shouldStartMuted);
   const id = useId();
   const title = formatServiceTitle(service.title);
   const video = resolveVideo({ sourceType: "external", url: service.demoVideoUrl, durationSeconds: null });
@@ -81,8 +84,11 @@ export default function ServiceModal({ service, opener, onDismiss }: Props) {
         </div>
         <div className="p-5 sm:p-6">
           <div className="relative aspect-video overflow-hidden rounded-2xl border border-white/10 bg-black">
-            {video && !failed && !closing ? (
-              <iframe src={video.url} title={`Demostración de ${title}`} allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+            {video && !failed && !closing ? video.provider === "YouTube" ? (
+              <YouTubeEmbed src={video.url} title={`Demostración de ${title}`} startMuted={startMuted}
+                onReveal={() => setLoading(false)} onError={() => { setLoading(false); setFailed(true); }} />
+            ) : (
+              <iframe src={getAutoplayUrl(video, startMuted)} title={`Demostración de ${title}`} allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
                 allowFullScreen referrerPolicy="strict-origin-when-cross-origin"
                 onLoad={() => setLoading(false)} onError={() => { setLoading(false); setFailed(true); }}
                 className="absolute inset-0 h-full w-full border-0" />
@@ -100,6 +106,7 @@ export default function ServiceModal({ service, opener, onDismiss }: Props) {
           {video && <a href={video.originalUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-2 text-xs text-zinc-400 underline underline-offset-4 hover:text-emerald-300">
             Abrir en {video.provider} <ExternalLink size={13} aria-hidden />
           </a>}
+          {video && startMuted && <p className="mt-2 text-xs leading-relaxed text-zinc-400">El video inicia sin sonido. Actívalo en los controles del reproductor.</p>}
           <div className="mt-7">
             <h3 className="text-sm font-semibold text-brand">Así trabajaremos</h3>
             <p id={`${id}-workflow`} className="mt-3 whitespace-pre-line text-sm leading-relaxed text-zinc-300">

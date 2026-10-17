@@ -8,6 +8,7 @@ import VideoOpening from "./VideoOpening";
 import { premiumServices } from "../data";
 import { usePortfolioProjects } from "../lib/usePortfolioProjects";
 import { toPortfolioCards, type PortfolioCard } from "../lib/portfolioCards";
+import { getAutoplayUrl, shouldStartMuted } from "../lib/videoAutoplay";
 
 // Textura de grano cinematográfico muy sutil (SVG inline, sin peticiones extra).
 const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E\")";
@@ -162,6 +163,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
   const [closing, setClosing] = useState(false); // true = animación de salida en curso
   const [videoError, setVideoError] = useState(false);
   const [videoReady, setVideoReady] = useState(false); // póster visible hasta que el video puede reproducirse
+  const [startMuted, setStartMuted] = useState(false);
   const openerRef = useRef<HTMLElement | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -171,6 +173,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
     if (!s.video) return;
     if (exitTimer.current) { window.clearTimeout(exitTimer.current); exitTimer.current = null; }
     openerRef.current = el;
+    setStartMuted(shouldStartMuted());
     setVideoReady(false);
     setVideoError(false);
     setClosing(false);
@@ -325,17 +328,17 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
                   category={playing.category} accent={playing.accent} grain={GRAIN}
                   ready={videoReady} failed={videoError} reducedMotion={reduce} />
                 {playing.video.provider === "YouTube" ? (
-                  <YouTubeEmbed src={playing.video.url} title={`Reproducir ${playing.title}`}
+                  <YouTubeEmbed src={playing.video.url} title={`Reproducir ${playing.title}`} startMuted={startMuted}
                     onReveal={() => setVideoReady(true)}
                     onError={() => { setVideoReady(true); setVideoError(true); }} />
                 ) : playing.video.kind === "embed" ? (
-                  <iframe key={playing.video.url} src={playing.video.url} title={`Reproducir ${playing.title}`}
+                  <iframe key={playing.video.url} src={getAutoplayUrl(playing.video, startMuted)} title={`Reproducir ${playing.title}`}
                     allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowFullScreen
                     referrerPolicy="strict-origin-when-cross-origin"
                     onLoad={() => setVideoReady(true)} onError={() => { setVideoReady(true); setVideoError(true); }}
                     className="absolute inset-0 h-full w-full border-0" />
                 ) : (
-                  <video key={playing.video.url} ref={videoRef} src={playing.video.url} poster={playing.poster ?? undefined} controls autoPlay playsInline preload="metadata"
+                  <video key={playing.video.url} ref={videoRef} src={playing.video.url} poster={playing.poster ?? undefined} controls autoPlay muted={startMuted} playsInline preload="metadata"
                     onLoadedData={() => setVideoReady(true)} onCanPlay={() => setVideoReady(true)} onPlaying={() => setVideoReady(true)}
                     onError={() => { setVideoReady(true); setVideoError(true); }}
                     className="absolute inset-0 h-full w-full bg-black object-contain" />
@@ -351,6 +354,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
                   <span aria-hidden className="mx-2 text-white/30">·</span>
                   <span className="text-[10px] uppercase tracking-[0.18em] text-white/60">{playing.category}</span></p>
                   {playing.video.provider && <a href={playing.video.originalUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs text-white/70 underline underline-offset-4 hover:text-white">Ver en {playing.video.provider}</a>}
+                  {startMuted && <p className="mt-2 text-xs leading-relaxed text-white/60">El video inicia sin sonido. Actívalo en los controles del reproductor.</p>}
                 </div>
                 <button type="button" onClick={closeVideo}
                   className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold text-white transition duration-300 hover:bg-white/10 motion-reduce:transition-none">

@@ -103,7 +103,7 @@ export default function Header({ logoRef, hideLogo = false }: { logoRef?: Ref<HT
           <Link to="/#contacto" className="btn-ghost hidden md:inline-flex">Trabajemos juntos</Link>
           <button type="button" onClick={() => setOpen(!open)}
             aria-label={open ? "Cerrar menú" : "Abrir menú"} aria-expanded={open}
-            className="-mr-2 grid h-11 w-11 place-items-center rounded-full text-white transition duration-300 hover:bg-white/10 md:hidden">
+            className="-mr-2 grid h-11 w-11 place-items-center rounded-full bg-brand text-white transition duration-300 hover:bg-white/10 md:hidden">
             {open ? <X size={22} aria-hidden /> : <Menu size={22} aria-hidden />}
           </button>
         </div>
