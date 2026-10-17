@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { createPortal, flushSync } from "react-dom";
 import { Link } from "react-router-dom";
 import { ArrowRight, ChevronLeft, ChevronRight, Play, X } from "lucide-react";
@@ -30,7 +30,7 @@ function ServiceCard({ s, clone, onPlay }: { s: Service; clone?: boolean; onPlay
   return (
     <article className="group h-full">
       <div
-        className="flex h-full flex-col overflow-hidden rounded-[26px] bg-white shadow-[0_28px_60px_-30px_rgba(0,0,0,.95)] ring-1 ring-white/10 transition duration-500 hover:-translate-y-1.5 hover:shadow-[0_40px_80px_-32px_rgba(0,0,0,1)] motion-reduce:transition-none">
+        className="flex h-full flex-col overflow-hidden rounded-[26px] bg-white shadow-[0_28px_60px_-30px_rgba(0,0,0,.95)] ring-1 ring-white/10 transition duration-500 lg:hover:-translate-y-1.5 md:hover:shadow-[0_40px_80px_-32px_rgba(0,0,0,1)] motion-reduce:transition-none">
         {/* Proporciones más compactas en escritorio para evitar tarjetas demasiado altas. */}
         <div className="relative aspect-[6/5] shrink-0 overflow-hidden sm:aspect-square md:aspect-[5/4] xl:aspect-[4/3] 2xl:aspect-[3/2]">
           {s.image ? <picture>
@@ -121,6 +121,11 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
   const posRef = useRef(1);
   const locked = useRef(false);
   const queued = useRef(0);
+  const [dragOffset, setDragOffset] = useState(0);
+  const gesture = useRef<{
+    pointerId: number; x: number; y: number; offset: number; axis: "horizontal" | "vertical" | null;
+  } | null>(null);
+  const suppressClick = useRef(false);
   const ms = reduce ? 0 : DURATION;
 
   useEffect(() => {
@@ -154,6 +159,52 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
     apply(posRef.current + dir);
     window.setTimeout(settle, ms + 20);
   };
+
+  const startDrag = (event: PointerEvent<HTMLUListElement>) => {
+    if (!carousel || n < 2 || !event.isPrimary || event.button !== 0 || gesture.current) return;
+    suppressClick.current = false;
+    if (locked.current) return;
+    gesture.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, offset: 0, axis: null };
+  };
+
+  const updateDrag = (event: PointerEvent<HTMLUListElement>) => {
+    const current = gesture.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    const dx = event.clientX - current.x;
+    const dy = event.clientY - current.y;
+    if (!current.axis) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 8) return;
+      current.axis = Math.abs(dx) > Math.abs(dy) ? "horizontal" : "vertical";
+      if (current.axis === "horizontal") {
+        event.currentTarget.setPointerCapture(event.pointerId);
+        suppressClick.current = true;
+      }
+    }
+    if (current.axis !== "horizontal") return;
+    // Limita el arrastre a una tarjeta para conservar los clones del bucle infinito.
+    const width = event.currentTarget.clientWidth;
+    current.offset = Math.max(-width, Math.min(width, dx));
+    setDragOffset(current.offset);
+  };
+
+  const finishDrag = (event: PointerEvent<HTMLUListElement>) => {
+    const current = gesture.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    gesture.current = null;
+    setDragOffset(0);
+    const threshold = Math.min(60, event.currentTarget.clientWidth * 0.15);
+    if (event.type === "pointerup" && current.axis === "horizontal" && Math.abs(current.offset) >= threshold) {
+      move(current.offset < 0 ? 1 : -1);
+    }
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  useEffect(() => {
+    gesture.current = null;
+    setDragOffset(0);
+  }, [carousel]);
 
   const active = n > 1 ? ((pos - 1) % n + n) % n : 0;
   // En móvil se añaden clones al inicio y al final para que el bucle no tenga corte
@@ -269,12 +320,31 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
           )}
           <div className={collection === "all" ? "relative" : "relative mx-auto max-w-[27rem] overflow-hidden sm:max-w-none sm:overflow-visible"}>
             <ul
+              onPointerDown={startDrag}
+              onPointerMove={updateDrag}
+              onPointerUp={finishDrag}
+              onPointerCancel={finishDrag}
+              onLostPointerCapture={(event) => {
+                if (event.target === event.currentTarget) finishDrag(event);
+              }}
+              onPointerLeave={(event) => {
+                if (!event.currentTarget.hasPointerCapture(event.pointerId)) finishDrag(event);
+              }}
+              onDragStart={(event) => { if (carousel) event.preventDefault(); }}
+              onClickCapture={(event) => {
+                if (suppressClick.current && event.detail !== 0) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }
+              }}
               className={collection === "all" ? "grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3" : carousel ? "flex" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"}
               style={carousel && n > 1 ? {
-                transform: `translateX(-${pos * 100}%)`,
+                touchAction: "pan-y pinch-zoom",
+                userSelect: "none",
+                transform: `translateX(calc(-${pos * 100}% + ${dragOffset}px))`,
                 transitionProperty: "transform",
                 transitionTimingFunction: "ease-out",
-                transitionDuration: animate ? `${ms}ms` : "0ms",
+                transitionDuration: animate && dragOffset === 0 ? `${ms}ms` : "0ms",
               } : undefined}>
               {slides.map((s, k) => {
                 const clone = carousel && n > 1 && (k === 0 || k === slides.length - 1);
@@ -292,12 +362,12 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
             {carousel && n > 1 && (
               <>
                 <button type="button" onClick={() => move(-1)} aria-label="Ver el servicio anterior"
-                  className="absolute left-0 top-[38%] z-20 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white ring-1 ring-white/25 backdrop-blur-md transition duration-300 hover:bg-black/75 active:scale-90 motion-reduce:transition-none">
-                  <ChevronLeft size={18} aria-hidden />
+                  className="absolute left-0 top-[38%] z-20 grid h-8 w-8 ml-[1px] -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white ring-1 ring-white/25 backdrop-blur-md transition duration-300 hover:bg-black/75 active:scale-90 motion-reduce:transition-none">
+                  <ChevronLeft size={16} aria-hidden />
                 </button>
                 <button type="button" onClick={() => move(1)} aria-label="Ver el siguiente servicio"
-                  className="absolute right-0 top-[38%] z-20 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white ring-1 ring-white/25 backdrop-blur-md transition duration-300 hover:bg-black/75 active:scale-90 motion-reduce:transition-none">
-                  <ChevronRight size={18} aria-hidden />
+                  className="absolute right-0 top-[38%] z-20 grid h-8 w-8 mr-[1px] -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white ring-1 ring-white/25 backdrop-blur-md transition duration-300 hover:bg-black/75 active:scale-90 motion-reduce:transition-none">
+                  <ChevronRight size={16} aria-hidden />
                 </button>
               </>
             )}

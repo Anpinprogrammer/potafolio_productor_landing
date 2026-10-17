@@ -199,8 +199,13 @@ export const About = () => (
         <dl className="grid grid-cols-3 gap-4 text-center">
           {[["3+","Años de experiencia"],["100+","Proyectos completados"],["50+","Clientes felices"]].map(([n, l]) => <div key={l} className="card"><dt className="text-3xl font-extrabold text-white">{n}</dt><dd className="text-xs text-slate-400">{l}</dd></div>)}
         </dl>
-        <div className="flex justify-center">
+        <div className="flex flex-col items-center gap-5">
           <ToolsMarquee className="relative flex w-full flex-col items-center text-center" />
+          <a href={`https://wa.me/${PHONE}?text=${encodeURIComponent("Hola, me gustaría recibir tu CV / Media Kit.")}`}
+            target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-full border border-zinc-700 px-5 py-2.5 text-center text-sm font-medium text-zinc-200 transition-all duration-300 hover:border-brand hover:bg-brand/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand motion-reduce:transition-none">
+            Solicitar CV / Media Kit
+          </a>
         </div>
       </Reveal>
     </div>
@@ -234,6 +239,13 @@ export const Process = () => (
           </li>
         ))}
       </ol>
+      <Reveal className="mt-10 flex justify-center">
+        <Link to="/#contacto"
+          className="group inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-brand/20 transition-all duration-300 hover:bg-brand2 hover:shadow-brand/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand motion-reduce:transition-none">
+          Comenzar mi proyecto
+          <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none" />
+        </Link>
+      </Reveal>
     </div>
   </section>
 );

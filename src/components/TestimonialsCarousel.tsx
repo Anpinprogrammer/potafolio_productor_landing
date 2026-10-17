@@ -22,7 +22,7 @@ export default function TestimonialsCarousel() {
         <div className="testimonials-carousel" role="region" aria-label="Reseñas de clientes" tabIndex={0}
           onPointerDown={() => setHolding(true)} onPointerUp={() => setHolding(false)}
           onPointerCancel={() => setHolding(false)} onPointerLeave={() => setHolding(false)}>
-          <div className="testimonials-carousel__track" style={{ animationDuration: `${reviews.length * 12}s`, animationPlayState: paused || holding ? "paused" : undefined }}>
+          <div className="testimonials-carousel__track" style={{ animationDuration: `${reviews.length * 10}s`, animationPlayState: paused || holding ? "paused" : undefined }}>
             {[false, true].map((duplicate) => (
               <ul key={String(duplicate)} aria-hidden={duplicate ? true : undefined}
                 className={`testimonials-carousel__group ${duplicate ? "testimonials-carousel__duplicate" : ""}`}>
@@ -49,7 +49,7 @@ export default function TestimonialsCarousel() {
           </div>
         </div>
       </Reveal>
-      <div className="mt-3 flex justify-end md:hidden motion-reduce:hidden">
+      <div className="mt-3 flex justify-end motion-reduce:hidden">
         <button type="button" onClick={() => setPaused(!paused)} aria-pressed={paused}
           aria-label={paused ? "Reanudar carrusel de reseñas" : "Pausar carrusel de reseñas"}
           className="inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-xs text-zinc-300 transition-colors hover:bg-white/5 hover:text-white">
