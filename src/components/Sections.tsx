@@ -97,7 +97,7 @@ export const Services = () => {
           <h2 id="servicios-title" className="text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl">Servicios de edición de video</h2>
           <p className="mt-5 text-lg font-medium leading-relaxed text-zinc-800">Cortes limpios. Imágenes que enganchan. Resultados reales.</p>
           <p className="mt-4 text-base leading-relaxed text-zinc-600">Ofrezco edición profesional adaptada a tus necesidades: redes sociales, YouTube o promoción de tu negocio. Me enfoco en calidad, creatividad y entrega a tiempo.</p>
-          <Link to="/#contacto" className="group mt-8 inline-flex items-center gap-3 rounded-full bg-emerald-600 px-6 py-3 font-semibold text-white shadow-lg shadow-emerald-900/30 transition-colors duration-300 hover:bg-emerald-500 motion-reduce:transition-none">
+          <Link to="/#contacto" className="group mt-8 btn-primary motion-reduce:transition-none">
             Reserva tu fecha
             <ArrowRight size={18} aria-hidden className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none" />
           </Link>
