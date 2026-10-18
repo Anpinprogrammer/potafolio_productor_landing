@@ -150,9 +150,11 @@ export const Services = () => {
           </ul>
           <Reveal className="mt-4 md:mt-12 text-center">
             <p className="mb-4 text-sm leading-relaxed text-zinc-500">¿Tienes un proyecto especial en mente? Hablemos de tus requerimientos.</p>
-            <Link to="/#contacto" className="group btn-primary-light mx-auto inline-flex items-center gap-3 rounded-full px-8 py-3.5">
+            <Link to="/#contacto" className="group btn-primary-light cta-pill w-fit">
               Reserva tu fecha
-              <ArrowRight size={18} aria-hidden="true" className="transition-transform duration-300 group-hover:-rotate-45 group-focus-visible:-rotate-45 motion-reduce:transform-none motion-reduce:transition-none" />
+              <span aria-hidden="true" className="cta-icon">
+                <ArrowRight size={18} className="transition-transform duration-300 group-hover:-rotate-45 group-focus-visible:-rotate-45 motion-reduce:transform-none motion-reduce:transition-none" />
+              </span>
             </Link>
           </Reveal>
         </div>
