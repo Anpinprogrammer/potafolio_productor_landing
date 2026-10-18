@@ -120,7 +120,7 @@ export const Services = () => {
               const Icon = getServiceIcon(icon);
               return (
                 <li key={_id} className="w-[85%] min-w-[85%] shrink-0 snap-center sm:w-[45%] sm:min-w-[45%] lg:h-full lg:w-auto lg:min-w-0">
-                  <Reveal dir="zoom" delay={i * 90} className="h-full">
+                  <Reveal dir="zoom" delay={i * 90} className="h-full" mobileGroup>
                     <article className="group relative isolate flex h-full min-h-[15rem] flex-col overflow-hidden rounded-[28px] border border-zinc-800 bg-navy p-5 shadow-md shadow-black/10 transition-all duration-300 hover:-translate-y-1 hover:border-brand hover:shadow-lg hover:shadow-brand/10 focus-within:border-brand focus-within:shadow-lg focus-within:shadow-brand/10 active:translate-y-0 motion-reduce:transform-none motion-reduce:transition-none xl:p-6">
                       <button type="button" aria-haspopup="dialog" aria-label={`Ver detalles de ${formatServiceTitle(title)}`}
                         onClick={(event) => {
