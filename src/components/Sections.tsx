@@ -97,12 +97,12 @@ export const Services = () => {
     }
   };
   return (
-    <section id="servicios" aria-labelledby="servicios-title" aria-busy={loading} className="bg-white py-16 lg:py-24">
+    <section id="servicios" aria-labelledby="servicios-title" aria-busy={loading} className="bg-white py-12 lg:py-20">
       <div className="wrap grid w-full grid-cols-1 gap-10 lg:gap-12">
         <Reveal dir="left" className="min-w-0 max-w-3xl lg:mx-auto lg:flex lg:flex-col lg:items-center lg:text-center">
           <SectionBadge text="Mis servicios" theme="light" className="mb-5" />
-          <h2 id="servicios-title" className="text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl lg:mb-4 lg:text-5xl lg:font-extrabold lg:text-zinc-900">
-            Servicios de <span className="lg:hidden">edición de video</span><span className="font-script hidden lg:inline font-bold text-lens lg:text-[3.4rem]">Edición de Video</span>
+          <h2 id="servicios-title" className="text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl lg:mb-4 lg:font-bold lg:text-zinc-900">
+            Servicios de edición de video<span className="hidden">edición de video</span><span className="font-script hidden font-bold text-lens lg:text-[3.4rem]">Edición de Video</span>
           </h2>
           <p className="mt-5 text-lg font-medium leading-relaxed text-zinc-800 lg:mb-2 lg:mt-0">Cortes limpios. Imágenes que enganchan. Resultados reales.</p>
           <p className="mt-4 text-base leading-relaxed text-zinc-600 lg:mt-0 lg:max-w-xl">Ofrezco edición profesional adaptada a tus necesidades: redes sociales, YouTube o promoción de tu negocio. Me enfoco en calidad, creatividad y entrega a tiempo.</p>
@@ -148,7 +148,7 @@ export const Services = () => {
               );
             })}
           </ul>
-          <Reveal className="mt-12 text-center">
+          <Reveal className="mt-4 md:mt-12 text-center">
             <p className="mb-4 text-sm leading-relaxed text-zinc-500">¿Tienes un proyecto especial en mente? Hablemos de tus requerimientos.</p>
             <Link to="/#contacto" className="group btn-primary-light mx-auto inline-flex items-center gap-3 rounded-full px-8 py-3.5">
               Reserva tu fecha
@@ -189,7 +189,7 @@ export const Projects = () => (
 
 export const About = () => (
   <section id="sobre-mi" className="bg-navy py-12 lg:py-20">
-    <div className="wrap mb-8 lg:mb-12">
+    <div className="wrap lg:mb-12">
       <SectionBadge text="Sobre mí" theme="dark" className="mb-2" />
     </div>
     <div className="wrap grid items-stretch gap-1 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
@@ -208,7 +208,7 @@ export const About = () => (
       </Reveal>
       <Reveal delay={150} className="flex h-full flex-col justify-between gap-8">
         <div>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mt-4 md:mt-0">Hola, soy Alejandro Yamamoto</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mt-4 md:mt-0">Mi nombre es <span className="font-script text-[2.38rem] font-normal text-lens md:text-[3.4rem]"> Alejandro Yamamoto</span></h2>
           <p className="mt-4 text-slate-300">Soy un editor apasionado con ojo para el detalle y amor por contar historias. Ayudo a marcas, creadores y negocios a convertir sus ideas en videos que conectan con su audiencia.</p>
         </div>
         <dl className="grid grid-cols-3 gap-4 text-center">
@@ -255,7 +255,7 @@ export const Process = () => (
         ))}
       </ol>
       <Reveal className="mt-8 flex justify-center">
-        <Link to="/#contacto" className="group btn-primary-light cta-pill mt-8 w-fit">
+        <Link to="/#contacto" className="group btn-primary-light cta-pill md:mt-8 w-fit">
             Comenzar mi proyecto
             <span aria-hidden="true" className="cta-icon">
               <ArrowRight size={18} className="transition-transform duration-300 group-hover:-rotate-45 group-focus-visible:-rotate-45 motion-reduce:transform-none motion-reduce:transition-none" />
@@ -271,7 +271,7 @@ export const Testimonials = () => (
     <div className="wrap grid gap-10 lg:grid-cols-[1fr_3fr]">
       <Reveal dir="left">
       <SectionBadge text="Reseñas" theme="dark" className="mb-4" />
-      <h2 className="text-3xl md:text-4xl font-bold text-white">Lo que dicen mis clientes</h2><p className="mt-2 text-slate-400">Personas reales. Proyectos reales. Resultados reales.</p></Reveal>
+      <h2 className="text-3xl md:text-4xl font-bold text-white">Lo que dicen <span className="font-script text-[2.38rem] font-normal text-lens md:text-[3.4rem]">mis clientes</span></h2><p className="mt-2 text-slate-400">Personas reales. Proyectos reales. Resultados reales.</p></Reveal>
       <TestimonialsCarousel />
     </div>
   </section>
