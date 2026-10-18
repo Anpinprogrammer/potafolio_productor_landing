@@ -1,5 +1,46 @@
 export const SECTION_REPLAY_EVENT = "yamamoto:section-replay";
 
+export function sectionScrollDuration(distance: number) {
+  return Math.min(4500, 650 + Math.abs(distance) * 0.45);
+}
+
+/** Mantiene una velocidad cómoda también al saltar varias secciones. */
+export function scrollToSection(section: HTMLElement, onComplete: () => void) {
+  const start = window.scrollY;
+  const destination = () => {
+    const padding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    const margin = parseFloat(getComputedStyle(section).scrollMarginTop) || 0;
+    const top = section.getBoundingClientRect().top + window.scrollY - padding - margin;
+    const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    return Math.max(0, Math.min(top, max));
+  };
+  const duration = sectionScrollDuration(destination() - start);
+  let frame: number | undefined;
+  let startedAt: number | undefined;
+  const events = ["wheel", "touchstart", "pointerdown"] as const;
+  const stop = () => {
+    if (frame !== undefined) cancelAnimationFrame(frame);
+    events.forEach(event => window.removeEventListener(event, stop));
+    window.removeEventListener("keydown", onKey);
+  };
+  const onKey = (event: KeyboardEvent) => {
+    if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " ", "Escape"].includes(event.key)) stop();
+  };
+  const tick = (now: number) => {
+    startedAt ??= now;
+    const progress = Math.min(1, (now - startedAt) / duration);
+    const eased = progress < 0.5 ? 4 * progress ** 3 : 1 - (-2 * progress + 2) ** 3 / 2;
+    // Instant evita que el smooth nativo se reinicie en cada frame.
+    window.scrollTo({ top: start + (destination() - start) * eased, behavior: "instant" });
+    if (progress < 1) frame = requestAnimationFrame(tick);
+    else { stop(); onComplete(); }
+  };
+  events.forEach(event => window.addEventListener(event, stop, { passive: true }));
+  window.addEventListener("keydown", onKey);
+  frame = requestAnimationFrame(tick);
+  return stop;
+}
+
 /** Compensa cambios de altura de Sanity sin interferir con el siguiente gesto del usuario. */
 export function keepSectionAligned(section: HTMLElement) {
   const main = section.closest("main");

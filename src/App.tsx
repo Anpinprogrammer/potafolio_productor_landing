@@ -7,7 +7,7 @@ import PremiumServices from "./components/PremiumServices";
 import { Hero, Services, About, Process, Testimonials, Contact } from "./components/Sections";
 import Footer from "./components/Footer";
 import ProjectsPage from "./pages/ProjectsPage";
-import { keepSectionAligned, replaySection } from "./lib/sectionNavigation";
+import { keepSectionAligned, replaySection, scrollToSection } from "./lib/sectionNavigation";
 
 export default function App() {
   const { pathname, hash, key: navigationKey } = useLocation();
@@ -40,6 +40,7 @@ export default function App() {
     previousPath.current = pathname;
     let stopReplay: (() => void) | undefined;
     let stopAlignment: (() => void) | undefined;
+    let stopScroll: (() => void) | undefined;
     // Espera a que el menú móvil se desmonte y restaure el scroll antes de navegar.
     const frame = requestAnimationFrame(() => {
       const target = hash ? document.getElementById(hash.slice(1)) : null;
@@ -47,13 +48,19 @@ export default function App() {
         const section = target.closest("section") ?? target;
         stopReplay = replaySection(section);
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        section.scrollIntoView({ behavior: reduced || changedPage ? "instant" : "smooth" });
-        stopAlignment = keepSectionAligned(section);
+        if (reduced || changedPage) {
+          section.scrollIntoView({ behavior: "instant" });
+          stopAlignment = keepSectionAligned(section);
+        } else {
+          stopScroll = scrollToSection(section, () => {
+            stopAlignment = keepSectionAligned(section);
+          });
+        }
       } else {
         window.scrollTo({ top: 0, left: 0, behavior: "instant" });
       }
     });
-    return () => { cancelAnimationFrame(frame); stopReplay?.(); stopAlignment?.(); };
+    return () => { cancelAnimationFrame(frame); stopScroll?.(); stopReplay?.(); stopAlignment?.(); };
   }, [pathname, hash, navigationKey, introActive]);
 
   useEffect(() => {
