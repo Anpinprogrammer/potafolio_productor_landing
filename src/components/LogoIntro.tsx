@@ -13,7 +13,7 @@ type Props = {
   play?: boolean;
 };
 
-export default function LogoIntro({ targetRef, onReveal, onComplete, duration = 2.2, intensity = 0.85, travelDuration = 0.8, play = true }: Props) {
+export default function LogoIntro({ targetRef, onReveal, onComplete, duration = 2.2, intensity = 1.25, travelDuration = 0.8, play = true }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const flight = useRef<HTMLDivElement>(null);
   const backdrop = useRef<HTMLDivElement>(null);

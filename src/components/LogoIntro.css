@@ -1,4 +1,14 @@
 .logo-intro { position: fixed; inset: 0; z-index: 200; isolation: isolate; }
+
+.logo-intro .brand-logo__bloom {
+  width: 35%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse 24% 28% at center, #fff 0%, rgba(225, 239, 255, .95) 18%, rgba(107, 165, 241, .65) 42%, transparent 100%),
+    radial-gradient(ellipse 50% 3% at center, #fff 0%, rgba(198, 225, 255, .9) 30%, transparent 100%),
+    radial-gradient(ellipse 2% 40% at center, #fff 0%, rgba(137, 189, 255, .7) 30%, transparent 100%);
+  filter: drop-shadow(0 0 6px rgba(166, 208, 255, .8));
+}
 .logo-intro__backdrop { position: absolute; inset: 0; background: #010204; }
 .logo-intro__flight {
   position: absolute; left: 50%; top: 50%; width: min(82vw, 860px); aspect-ratio: 2127 / 739;
