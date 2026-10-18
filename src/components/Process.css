@@ -1,0 +1,133 @@
+.process-step {
+  --connector-delay: 700ms;
+  --icon-size: 48px;
+  --icon-cutout: 34px;
+  --icon-x: 32px;
+  --exit-x: calc(100% - 32px);
+}
+
+.process-step:nth-child(2) {
+  --connector-delay: 820ms;
+}
+
+.process-step:nth-child(3) {
+  --connector-delay: 940ms;
+}
+
+.process-step--right {
+  --icon-x: calc(100% - 32px);
+  --exit-x: 32px;
+}
+
+@media (max-width: 639px) {
+  .process-steps {
+    width: 90%;
+    margin-inline: auto;
+  }
+}
+
+.process-card {
+  border-radius: 24px 24px 0 0;
+  /* Los recortes pertenecen a la silueta, sin tapar el contenido con círculos. */
+  -webkit-mask-image: radial-gradient(circle at var(--icon-x) 0, transparent calc(var(--icon-cutout) - 1px), #000 var(--icon-cutout));
+  mask-image: radial-gradient(circle at var(--icon-x) 0, transparent calc(var(--icon-cutout) - 1px), #000 var(--icon-cutout));
+}
+
+.process-icon {
+  top: 0;
+  left: var(--icon-x);
+  width: var(--icon-size);
+  height: var(--icon-size);
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.process-connector {
+  left: 32px;
+  top: 100%;
+  width: calc(100% - 64px);
+  height: 48px;
+  opacity: 0.6;
+}
+
+.process-step--right .process-connector-curve {
+  transform: scaleX(-1);
+}
+
+.process-connector-arrow {
+  bottom: -8px;
+  right: -8px;
+  transform: rotate(90deg);
+}
+
+.process-step--right .process-connector-arrow {
+  right: auto;
+  left: -8px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .process-connector-reveal {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 900ms ease-in-out var(--connector-delay);
+  }
+
+  .process-connector--visible .process-connector-reveal {
+    stroke-dashoffset: 0;
+  }
+
+  .process-connector-arrow {
+    opacity: 0;
+    transition: opacity 180ms ease-out;
+  }
+
+  .process-connector--visible .process-connector-arrow {
+    opacity: 1;
+    transition-delay: calc(var(--connector-delay) + 850ms);
+  }
+
+  .process-connector--resetting .process-connector-reveal,
+  .process-connector--resetting .process-connector-arrow {
+    transition: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .process-steps {
+    padding-bottom: 136px;
+  }
+
+  .process-step:nth-child(even) {
+    transform: translateY(96px);
+  }
+
+  /* Impares: salir por abajo y subir hasta el borde inferior del siguiente. */
+  .process-step .process-connector {
+    left: calc(100% - 32px);
+    top: 100%;
+    width: 96px;
+    height: 120px;
+    z-index: 2;
+  }
+
+  .process-step .process-connector-arrow {
+    left: auto;
+    right: -8px;
+    top: 96px;
+    bottom: auto;
+    transform: rotate(-90deg);
+    z-index: 1;
+  }
+
+  /* Pares: salir por arriba y bajar hasta el borde superior del siguiente. */
+  .process-step--right .process-connector {
+    top: -144px;
+    height: 144px;
+  }
+
+  .process-step--right .process-connector-arrow {
+    /* Deja 4px entre la punta y la parte superior de la burbuja. */
+    top: 4px;
+    transform: rotate(90deg);
+  }
+}

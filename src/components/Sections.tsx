@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Play, Zap, ShieldCheck, MessageCircle, Mail, Clapperboard } from "lucide-react";
@@ -10,11 +10,13 @@ import ToolsMarquee from "./ToolsMarquee";
 import { projects, steps } from "../data";
 import { useServices } from "../lib/useServices";
 import { getServiceIcon } from "../lib/serviceIcons";
+import { SECTION_REPLAY_EVENT } from "../lib/sectionNavigation";
 import { formatServiceTitle, type Service } from "../lib/services";
 import ServiceModal from "./ServiceModal";
 import { PHONE, EMAIL, MESSAGE, formatearTelefono } from "../utils";
 import "./Hero.css";
 import "./BrandCards.css";
+import "./Process.css";
 
 export const Hero = () => {
   const imageRef = useRef<HTMLImageElement>(null);
@@ -229,32 +231,99 @@ export const About = () => (
   </section>
 );
 
-export const Process = () => (
-  <section id="proceso" className="bg-white py-12 lg:py-20 text-zinc-900" aria-labelledby="proceso-title">
+function ProcessConnector({ index }: { index: number }) {
+  const id = useId().replace(/:/g, "");
+  const desktopPath = index % 2 === 0
+    ? "M0 0 V88 Q0 120 32 120 H72 Q96 120 96 96"
+    : "M0 144 V32 Q0 0 32 0 H80 Q96 0 96 16 V20";
+  return (
+    <div aria-hidden="true" className="process-connector pointer-events-none absolute text-[#2B4C7E]">
+      {[
+        { name: "mobile", viewBox: "0 0 100 48", path: "M0 0 C0 36 100 12 100 48", classes: "process-connector-curve lg:hidden" },
+        { name: "desktop", viewBox: `0 0 96 ${index % 2 === 0 ? 120 : 144}`, path: desktopPath, classes: "hidden lg:block" },
+      ].map(({ name, viewBox, path, classes }) => (
+        <svg key={name} viewBox={viewBox} preserveAspectRatio="none" className={`${classes} h-full w-full overflow-visible`} fill="none">
+          <defs>
+            <mask id={`${id}-${name}`} maskUnits="userSpaceOnUse" x="-5" y="-5" width="110" height="154">
+              <path className="process-connector-reveal" d={path} pathLength="1" stroke="white" strokeWidth="8" strokeLinecap="round" />
+            </mask>
+          </defs>
+          <path d={path} mask={`url(#${id}-${name})`} stroke="currentColor" strokeWidth="2" strokeDasharray="4 6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        </svg>
+      ))}
+      <ArrowRight size={16} className="process-connector-arrow absolute text-[#2B4C7E]" />
+    </div>
+  );
+}
+
+export const Process = () => {
+  const processRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const section = processRef.current;
+    if (!section) return;
+    const connectors = section.querySelectorAll<HTMLElement>(".process-connector");
+    let frame: number | undefined;
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add("process-connector--visible");
+        observer.unobserve(entry.target);
+      }
+    }, { threshold: 0.3, rootMargin: "0px 0px -32px 0px" });
+    const replay = () => {
+      observer.disconnect();
+      if (frame !== undefined) cancelAnimationFrame(frame);
+      connectors.forEach((connector) => {
+        connector.classList.add("process-connector--resetting");
+        connector.classList.remove("process-connector--visible");
+      });
+      frame = requestAnimationFrame(() => {
+        frame = requestAnimationFrame(() => {
+          frame = undefined;
+          connectors.forEach((connector) => {
+            connector.classList.remove("process-connector--resetting");
+            observer.observe(connector);
+          });
+        });
+      });
+    };
+    section.addEventListener(SECTION_REPLAY_EVENT, replay);
+    connectors.forEach((connector) => observer.observe(connector));
+    return () => {
+      observer.disconnect();
+      if (frame !== undefined) cancelAnimationFrame(frame);
+      section.removeEventListener(SECTION_REPLAY_EVENT, replay);
+    };
+  }, []);
+  return (
+  <section ref={processRef} id="proceso" className="bg-white py-12 lg:py-20 text-zinc-900" aria-labelledby="proceso-title">
     <div className="wrap">
       <Reveal>
         <SectionBadge text="El proceso" theme="light" className="mb-4" />
         <h2 id="proceso-title" className="text-3xl md:text-4xl font-bold text-zinc-900">Un proceso simple en 4 pasos</h2><p className="mt-2 text-zinc-600">Conseguir tu video ideal es fácil. Solo sigue estos pasos.</p></Reveal>
-      <ol className="mt-10 grid auto-rows-fr gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {steps.map(({ icon: I, t, d }, i) => (
-          <li key={t} className="h-full min-w-0">
-            <Reveal delay={i * 120} className="h-full">
-              <article className="group relative isolate flex h-full min-h-[16rem] flex-col overflow-hidden rounded-[28px] border border-zinc-800 bg-navy p-5 shadow-md shadow-black/10 transition-all duration-300 hover:-translate-y-1 hover:border-brand/50 hover:shadow-lg hover:shadow-brand/10 motion-reduce:transform-none motion-reduce:transition-none xl:p-6">
-                <div className="mb-6 flex items-center justify-between gap-4">
-                  <span className="inline-flex shrink-0 rounded-full bg-brand/10 p-3 text-brand ring-1 ring-inset ring-brand/20 transition-colors duration-300 group-hover:bg-brand/15 motion-reduce:transition-none">
-                    <I size={24} strokeWidth={1.7} aria-hidden />
-                  </span>
-                  <span aria-hidden="true" className="text-xl font-extrabold text-brand tabular-nums tracking-tight">0{i + 1}</span>
-                </div>
-                <h3 className="break-words text-lg font-bold leading-snug tracking-tight text-zinc-50">{t}</h3>
-                <p className="mt-2 break-words text-sm leading-relaxed text-zinc-300">{d}</p>
-                <div aria-hidden="true" className="mt-auto pt-6">
-                  <span className="bg-brand block h-0.5 w-10 rounded-full opacity-60 transition-all duration-300 group-hover:w-16 group-hover:opacity-100 motion-reduce:transition-none" />
-                </div>
-              </article>
-            </Reveal>
-          </li>
-        ))}
+      <ol className="process-steps mt-16 grid auto-rows-fr grid-cols-1 gap-20 lg:grid-cols-4 lg:gap-8">
+        {steps.map(({ icon: I, t, d }, i) => {
+          const iconRight = i % 2 === 1;
+          const hasNext = i < steps.length - 1;
+          return (
+            <li key={t} className={`process-step relative h-full min-w-0 ${iconRight ? "process-step--right" : "process-step--left"}`}>
+              <Reveal delay={i * 120} className="relative h-full">
+                <article className="process-card relative flex h-full min-h-[12rem] flex-col bg-navy px-6 pb-6 pt-8">
+                  <span aria-hidden="true" className={`mb-3 text-xl font-extrabold tabular-nums tracking-tight text-[#2B4C7E] ${iconRight ? "self-start" : "self-end"}`}>0{i + 1}</span>
+                  <h3 className="break-words text-lg font-bold leading-snug tracking-tight text-zinc-50">{t}</h3>
+                  <p className="mt-2 break-words text-sm leading-relaxed text-zinc-300">{d}</p>
+                  <div aria-hidden="true" className={`mt-auto pt-4 flex ${iconRight ? 'justify-end' : 'justify-start'}`}>
+                    <span className="block h-0.5 w-10 rounded-full bg-[#2B4C7E]" />
+                  </div>
+                </article>
+                <span className="process-icon absolute grid place-items-center rounded-full border border-[#2B4C7E] bg-navy text-[#2B4C7E]">
+                  <I size={24} strokeWidth={1.7} aria-hidden />
+                </span>
+              </Reveal>
+              {hasNext && <ProcessConnector index={i} />}
+            </li>
+          );
+        })}
       </ol>
       <Reveal className="mt-8 flex justify-center">
         <Link to="/#contacto" className="group btn-primary-light cta-pill md:mt-8 w-fit">
@@ -266,7 +335,8 @@ export const Process = () => (
       </Reveal>
     </div>
   </section>
-);
+  );
+};
 
 export const Testimonials = () => (
   <section id="testimonial" className="bg-gradient-to-br from-navy via-ink to-brand2/40 py-12 lg:py-20">
