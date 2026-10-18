@@ -212,7 +212,8 @@ export const About = () => (
       </Reveal>
       <Reveal delay={150} className="flex h-full flex-col justify-between gap-8">
         <div>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mt-4 md:mt-0">Mi nombre es <span className="font-script text-[2.38rem] font-normal text-lens md:text-[3.4rem]"> Alejandro Yamamoto</span></h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mt-4 md:mt-0">Mi nombre es</h2>
+          <span className="font-script text-[2.38rem] font-normal text-lens md:text-[3.4rem]"> Alejandro Yamamoto</span>
           <p className="mt-4 text-slate-300">Soy un editor apasionado con ojo para el detalle y amor por contar historias. Ayudo a marcas, creadores y negocios a convertir sus ideas en videos que conectan con su audiencia.</p>
         </div>
         <dl className="grid grid-cols-3 gap-4 text-center">
