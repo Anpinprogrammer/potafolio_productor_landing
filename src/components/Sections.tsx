@@ -235,7 +235,7 @@ function ProcessConnector({ index }: { index: number }) {
   const id = useId().replace(/:/g, "");
   const desktopPath = index % 2 === 0
     ? "M0 0 V88 Q0 120 32 120 H72 Q96 120 96 96"
-    : "M0 144 V32 Q0 0 32 0 H80 Q96 0 96 16 V20";
+    : "M0 144 V32 Q0 0 32 0 H80 Q96 0 96 16 V24";
   return (
     <div aria-hidden="true" className="process-connector pointer-events-none absolute text-[#2B4C7E]">
       {[
@@ -309,7 +309,7 @@ export const Process = () => {
             <li key={t} className={`process-step relative h-full min-w-0 ${iconRight ? "process-step--right" : "process-step--left"}`}>
               <Reveal delay={i * 120} className="relative h-full">
                 <article className="process-card relative flex h-full min-h-[12rem] flex-col bg-navy px-6 pb-6 pt-8">
-                  <span aria-hidden="true" className={`mb-3 text-xl font-extrabold tabular-nums tracking-tight text-[#2B4C7E] ${iconRight ? "self-start" : "self-end"}`}>0{i + 1}</span>
+                  <span aria-hidden="true" className={`mb-3 text-xl font-extrabold tabular-nums tracking-tight text-slate-300 ${iconRight ? "self-start" : "self-end"}`}>0{i + 1}</span>
                   <h3 className="break-words text-lg font-bold leading-snug tracking-tight text-zinc-50">{t}</h3>
                   <p className="mt-2 break-words text-sm leading-relaxed text-zinc-300">{d}</p>
                   <div aria-hidden="true" className={`mt-auto pt-4 flex ${iconRight ? 'justify-end' : 'justify-start'}`}>
