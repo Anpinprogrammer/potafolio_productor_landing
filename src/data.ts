@@ -1,4 +1,4 @@
-import { Youtube, Smartphone, Megaphone, Wand2, Palette, AudioLines, Lightbulb, MessagesSquare, Scissors, Rocket, Plane, Zap, Clapperboard } from "lucide-react";
+import { Youtube, Smartphone, Megaphone, Wand2, Palette, AudioLines, Plane, Zap, Clapperboard } from "lucide-react";
 export const nav = [["Inicio","#inicio"],["Portafolio","#portafolio"],["Servicios","#servicios"],["Sobre mí","#sobre-mi"],["Proceso", "#proceso"], ["Reseñas","#testimonial"]];
 export const services = [
   { icon: Youtube, t: "Edición para YouTube", d: "Formato largo y corto" },
@@ -15,10 +15,10 @@ export const projects = [
   { t: "Corto cinematográfico", tag: "Historia · Color", time: "1:30", g: "from-orange-500/50 to-indigo-900" },
 ];
 export const steps = [
-  { icon: Lightbulb, t: "Comparte tu idea", d: "Cuéntame tu proyecto, referencias y requisitos." },
-  { icon: MessagesSquare, t: "Planificación", d: "Te propongo el mejor enfoque y los tiempos." },
-  { icon: Scissors, t: "Edición y revisiones", d: "Creo el borrador y aplico tus cambios." },
-  { icon: Rocket, t: "Entrega final", d: "Recibes tu video listo y a tiempo." },
+  { icon: "/images/proceso/idea.svg", t: "Comparte tu idea", d: "Cuéntame tu proyecto, referencias y requisitos." },
+  { icon: "/images/proceso/plan.svg", t: "Planificación", d: "Te propongo el mejor enfoque y los tiempos." },
+  { icon: "/images/proceso/edicion.svg", t: "Edición y revisiones", d: "Creo el borrador y aplico tus cambios." },
+  { icon: "/images/proceso/entrega.svg", t: "Entrega final", d: "Recibes tu video listo y a tiempo." },
 ];
 export type Review = {
   n: string;

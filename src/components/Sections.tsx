@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Play, Zap, ShieldCheck, MessageCircle, Mail, Clapperboard } from "lucide-react";
 import Reveal from "./Reveal";
 import SectionBadge from "./SectionBadge";
+import ProcessIcon from "./ProcessIcon";
 import WhatsAppIcon from "./WhatsAppIcon";
 import TestimonialsCarousel from "./TestimonialsCarousel";
 import ToolsMarquee from "./ToolsMarquee";
@@ -303,7 +304,7 @@ export const Process = () => {
         <SectionBadge text="El proceso" theme="light" className="mb-4" />
         <h2 id="proceso-title" className="text-3xl md:text-4xl font-bold text-zinc-900">Un proceso simple en 4 pasos</h2><p className="mt-2 text-zinc-600">Conseguir tu video ideal es fácil. Solo sigue estos pasos.</p></Reveal>
       <ol className="process-steps mt-16 grid auto-rows-fr grid-cols-1 gap-20 lg:grid-cols-4 lg:gap-8">
-        {steps.map(({ icon: I, t, d }, i) => {
+        {steps.map(({ icon, t, d }, i) => {
           const iconRight = i % 2 === 1;
           const hasNext = i < steps.length - 1;
           return (
@@ -318,7 +319,7 @@ export const Process = () => {
                   </div>
                 </article>
                 <span className="process-icon absolute grid place-items-center rounded-full border border-[#2B4C7E] bg-navy text-[#2B4C7E]">
-                  <I size={24} strokeWidth={1.7} aria-hidden />
+                  <ProcessIcon src={icon} />
                 </span>
               </Reveal>
               {hasNext && <ProcessConnector index={i} />}

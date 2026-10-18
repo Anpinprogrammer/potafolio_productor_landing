@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="w-6 h-6 text-[#2B4C7E]">
+  <!-- Silueta de persona con destellos/ideas sobre la cabeza -->
+  <path d="M18 21a6 6 0 0 0-12 0" />
+  <circle cx="12" cy="11" r="4" />
+  <path d="M12 3v2" />
+  <path d="M18.36 5.64l-1.42 1.42" />
+  <path d="M5.64 5.64l1.42 1.42" />
+</svg>
