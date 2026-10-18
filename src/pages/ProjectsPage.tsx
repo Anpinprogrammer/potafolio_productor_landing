@@ -1,11 +1,27 @@
-import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import PremiumServices from "../components/PremiumServices";
 import SectionBadge from "../components/SectionBadge";
 
 export default function ProjectsPage() {
   const [category, setCategory] = useState("Todos");
+  const filtersRef = useRef<HTMLDivElement>(null);
+  const [hasMoreFilters, setHasMoreFilters] = useState(false);
+  useEffect(() => {
+    const filters = filtersRef.current;
+    if (!filters) return;
+    const update = () => setHasMoreFilters(filters.scrollWidth - filters.clientWidth - filters.scrollLeft > 2);
+    const observer = new ResizeObserver(update);
+    observer.observe(filters);
+    for (const child of filters.children) observer.observe(child);
+    filters.addEventListener("scroll", update, { passive: true });
+    update();
+    return () => {
+      observer.disconnect();
+      filters.removeEventListener("scroll", update);
+    };
+  }, []);
   const categories = ["Todos", "Comerciales", "Reels & TikTok", "YouTube", "Documental / Viajes"];
   return (
     <div className="min-h-screen bg-ink pt-24 md:pt-28">
@@ -23,7 +39,8 @@ export default function ProjectsPage() {
             Todos los <span className="font-script text-[2.38rem] font-normal text-lens md:text-[3.4rem]">proyectos</span>
           </h1>
           <p className="mt-4 max-w-full text-slate-400">Historias, marcas e ideas en movimiento. Explora cada proyecto y descubre el trabajo detrás de cada edición.</p>
-          <div role="group" aria-label="Filtrar proyectos por categoría" className="mt-6 flex snap-x snap-mandatory overflow-x-auto gap-2 pb-4 scrollbar-none">
+          <div className="relative mt-6">
+          <div ref={filtersRef} id="project-category-filters" role="group" aria-label="Filtrar proyectos por categoría" className="flex snap-x snap-mandatory overflow-x-auto gap-2 pb-4 scrollbar-none">
             {categories.map((item) => (
               <button key={item} type="button" aria-pressed={category === item}
                 onClick={(event) => {
@@ -34,6 +51,20 @@ export default function ProjectsPage() {
                 {item}
               </button>
             ))}
+          </div>
+          {hasMoreFilters && (
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-start bg-gradient-to-l from-ink via-ink/95 to-transparent pl-8">
+              <button type="button" aria-label="Ver más filtros" aria-controls="project-category-filters"
+                onClick={() => {
+                  const filters = filtersRef.current;
+                  if (!filters) return;
+                  filters.scrollBy({ left: filters.clientWidth * 0.7, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+                }}
+                className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full border border-[#2B4C7E] bg-[#2B4C7E] text-white shadow-sm transition-colors hover:bg-[#3B629B]">
+                <ChevronRight size={22} aria-hidden />
+              </button>
+            </div>
+          )}
           </div>
         </div>
       </div>
