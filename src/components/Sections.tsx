@@ -46,10 +46,10 @@ export const Hero = () => {
 
           <p className="mb-4 flex animate-rise items-center gap-2.5 text-sm font-medium tracking-wide text-zinc-400">
             <span aria-hidden="true" className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-brand motion-reduce:animate-none" />
-            Hola, soy profesional en
+            Portafolio profesional de un
           </p>
           <h1 className="animate-rise text-3xl font-bold lg:font-extrabold leading-tight text-white [animation-delay:.15s] md:text-6xl">
-            Edición de video <span className="block text-3xl font-extrabold md:text-6xl">que convierte ideas en <span className="font-script text-5xl font-semibold text-lens md:text-6xl">historias</span></span>
+            Realizador audiovisual<span className="block text-3xl font-extrabold md:text-6xl">que convierte ideas en <span className="font-script text-5xl font-semibold text-lens md:text-6xl">historias</span></span>
           </h1>
           
 
