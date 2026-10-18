@@ -60,8 +60,8 @@ export default function ProjectsPage() {
                   if (!filters) return;
                   filters.scrollBy({ left: filters.clientWidth * 0.7, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
                 }}
-                className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full border border-[#2B4C7E] bg-[#2B4C7E] text-white shadow-sm transition-colors hover:bg-[#3B629B]">
-                <ChevronRight size={22} aria-hidden />
+                className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-[#2B4C7E] bg-[#2B4C7E] text-white shadow-sm transition-colors hover:bg-[#3B629B]">
+                <ChevronRight size={20} aria-hidden />
               </button>
             </div>
           )}
