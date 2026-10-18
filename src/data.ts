@@ -9,7 +9,7 @@ export const services = [
   { icon: AudioLines, t: "Mejora de audio", d: "Sonido limpio y claro" },
 ];
 export const projects = [
-  { t: "Vlog de viaje", tag: "Viaje · Cine · Vlog", time: "1:12", g: "from-emerald-500/60 to-sky-700/60" },
+  { t: "Vlog de viaje", tag: "Viaje · Cine · Vlog", time: "1:12", g: "from-cyan-500/60 to-sky-700/60" },
   { t: "Promo de producto", tag: "Anuncios · Motion", time: "0:45", g: "from-amber-500/50 to-stone-800" },
   { t: "Reel fitness", tag: "Redes · Rápido", time: "0:56", g: "from-fuchsia-600/50 to-slate-900" },
   { t: "Corto cinematográfico", tag: "Historia · Color", time: "1:30", g: "from-orange-500/50 to-indigo-900" },
@@ -48,7 +48,7 @@ export const premiumServices = [
     keywords: ["Explora", "Descubre", "Cuenta tu historia"],
     description: "Videos que capturan la esencia de cada lugar, experiencias y momentos únicos.",
     pills: ["Viaje", "Cine", "Vlog"],
-    accent: "#2ed3bd", tint: 0, video: VIDEO_TEST,
+    accent: "#00D2FF", tint: 0, video: VIDEO_TEST,
     image: "/images/servicios/1-viaje.webp", position: "56% 45%",
   },
   {

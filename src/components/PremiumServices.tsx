@@ -13,6 +13,7 @@ import { getAutoplayUrl, shouldStartMuted } from "../lib/videoAutoplay";
 
 // Textura de grano cinematográfico muy sutil (SVG inline, sin peticiones extra).
 const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E\")";
+const BRAND = "#2B4C7E";
 const MOBILE = "(max-width: 639px)";
 const DURATION = 450; // ms de la transición del carrusel
 // EXIT debe coincidir con la duración de la animación `modalout` en tailwind.config.js
@@ -71,8 +72,8 @@ function ServiceCard({ s, clone, onPlay }: { s: Service; clone?: boolean; onPlay
               title={s.video ? undefined : "Video no disponible"}
               onClick={(e) => onPlay(s, e.currentTarget)}
               aria-label={s.video ? `Reproducir el video de ${s.title}` : `Video no disponible para ${s.title}`}
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white/10 disabled:cursor-default disabled:opacity-40 text-white ring-1 ring-white/60 backdrop-blur-md transition duration-300 hover:scale-105 hover:bg-white hover:text-ink focus-visible:bg-white focus-visible:text-ink group-hover:scale-105 group-hover:bg-white group-hover:text-ink motion-reduce:transition-none"
-              style={{ boxShadow: `0 0 0 6px ${rgba(s.accent, 0.13)}, 0 12px 30px -10px ${rgba(s.accent, 0.7)}` }}>
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-brand disabled:cursor-default disabled:opacity-40 text-white ring-1 ring-blue-400/30 backdrop-blur-md transition duration-300 hover:scale-105 hover:bg-[#3B629B] focus-visible:bg-[#3B629B] group-hover:scale-105 group-hover:bg-[#3B629B] motion-reduce:transition-none"
+              style={{ boxShadow: `0 0 0 6px ${rgba(BRAND, 0.13)}, 0 12px 30px -10px ${rgba(BRAND, 0.7)}` }}>
               <Play size={15} fill="currentColor" aria-hidden className="translate-x-[1px]" />
             </button>
           </div>
@@ -83,7 +84,7 @@ function ServiceCard({ s, clone, onPlay }: { s: Service; clone?: boolean; onPlay
           <p className="min-h-[24px] text-[9px] font-bold uppercase leading-[1.3] tracking-[0.2em] text-slate-500">
             {s.keywords.join(" · ")}
           </p>
-          <span aria-hidden className="mt-1 h-[3px] w-9 rounded-full" style={{ background: s.accent }} />
+          <span aria-hidden className="mt-1 h-[3px] w-9 rounded-full bg-brand" />
           <p className="mt-2 line-clamp-3 text-[12px] leading-[1.45] text-slate-600">{s.description}</p>
           {s.services.length > 0 && <p className="mt-2 text-[10px] leading-relaxed text-slate-500"><span className="font-semibold">Servicios: </span>{s.services.join(" · ")}</p>}
           {s.publishedAt && s.publishedDate && <time dateTime={s.publishedAt} className="mt-2 text-[10px] text-slate-500">{s.publishedDate}</time>}
@@ -320,7 +321,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
           <Reveal className="max-w-2xl">
             <SectionBadge text="Proyectos destacados" theme="dark" />
             <h2 className="mt-4 text-3xl md:text-4xl font-extrabold leading-[1.06] text-white lg:text-5xl">
-              Cada proyecto, <span className="font-script text-[2.38rem] font-normal text-brand drop-shadow-[0_0_10px_rgba(20,107,58,0.4)] md:text-[3.4rem]">una película</span>
+              Cada proyecto, <span className="font-script text-[2.38rem] font-normal text-lens md:text-[3.4rem]">una película</span>
             </h2>
             <p className="mt-4 max-w-xl text-slate-400">
               Una selección de mis proyectos destacados: del viaje que inspira al anuncio que convierte. Dirección, edición y color con acabado de cine.
@@ -384,11 +385,11 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
             {carousel && n > 1 && (
               <>
                 <button type="button" onClick={() => move(-1)} aria-label="Ver el servicio anterior"
-                  className="absolute left-0 top-[38%] z-20 grid h-8 w-8 ml-[1px] -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white ring-1 ring-white/25 backdrop-blur-md transition duration-300 hover:bg-black/75 active:scale-90 motion-reduce:transition-none">
+                  className="absolute left-0 top-[38%] z-20 grid h-8 w-8 ml-[1px] -translate-y-1/2 place-items-center rounded-full bg-brand text-white ring-1 ring-blue-400/30 backdrop-blur-md transition duration-300 hover:bg-[#3B629B] active:scale-90 motion-reduce:transition-none">
                   <ChevronLeft size={16} aria-hidden />
                 </button>
                 <button type="button" onClick={() => move(1)} aria-label="Ver el siguiente servicio"
-                  className="absolute right-0 top-[38%] z-20 grid h-8 w-8 mr-[1px] -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white ring-1 ring-white/25 backdrop-blur-md transition duration-300 hover:bg-black/75 active:scale-90 motion-reduce:transition-none">
+                  className="absolute right-0 top-[38%] z-20 grid h-8 w-8 mr-[1px] -translate-y-1/2 place-items-center rounded-full bg-brand text-white ring-1 ring-blue-400/30 backdrop-blur-md transition duration-300 hover:bg-[#3B629B] active:scale-90 motion-reduce:transition-none">
                   <ChevronRight size={16} aria-hidden />
                 </button>
               </>
@@ -400,7 +401,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
             <div className="mt-5 flex items-center justify-center gap-1.5">
               {cards.map((s, k) => (
                 <span key={s.id} aria-hidden
-                  className={`h-1.5 rounded-full transition-all duration-300 ${k === active ? "w-5 bg-white/85" : "w-1.5 bg-white/25"}`} />
+                  className={`h-1.5 rounded-full transition-all duration-300 ${k === active ? "w-5 bg-brand" : "w-1.5 bg-brand/30"}`} />
               ))}
               <span className="sr-only" aria-live="polite">{`Servicio ${active + 1} de ${n}`}</span>
             </div>
@@ -419,12 +420,12 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
               className={`relative max-h-[calc(100svh-2rem)] w-full max-w-4xl overflow-y-auto rounded-lg outline-none sm:max-h-[calc(100svh-3rem)] landscape:max-h-[calc(100svh-1rem)] landscape:max-w-[min(56rem,calc((100svh_-_8rem)*16/9))] ${closing ? "animate-modalout" : "animate-modalin"}`}>
               <div className="mb-2 flex justify-end">
                 <button type="button" onClick={closeVideo} aria-label="Cerrar video"
-                  className="relative z-50 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full bg-black/60 px-3 py-2 text-sm text-white backdrop-blur-md transition-colors hover:bg-black/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white motion-reduce:transition-none">
+                  className="relative z-50 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full bg-black/60 px-3 py-2 text-sm text-white backdrop-blur-md transition-colors hover:bg-brand/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand motion-reduce:transition-none">
                   <X size={18} aria-hidden="true" />Cerrar
                 </button>
               </div>
               <div className="relative aspect-video h-auto max-h-[80vh] w-full overflow-hidden rounded-lg bg-black ring-1 ring-white/15 sm:max-h-[85vh]"
-                style={{ boxShadow: `0 0 0 1px ${rgba(playing.accent, 0.35)}, 0 40px 120px -40px ${rgba(playing.accent, 0.55)}` }}>
+                style={{ boxShadow: `0 0 0 1px ${rgba(BRAND, 0.35)}, 0 40px 120px -40px ${rgba(BRAND, 0.55)}` }}>
                 <VideoOpening key={playing.id} poster={playing.poster} title={playing.title}
                   category={playing.category} accent={playing.accent} grain={GRAIN}
                   ready={videoReady} failed={videoError} reducedMotion={reduce} />
@@ -446,7 +447,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
                 )}
                 {videoError && <div role="alert" className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/90 p-6 text-center text-sm text-white">
                   <p>No pudimos reproducir este video.</p>
-                  <a href={playing.video.originalUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Abrir el video</a>
+                  <a href={playing.video.originalUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-brand">Abrir el video</a>
                 </div>}
               </div>
               <div className="mt-3 px-1 pb-1 landscape:mt-2">

@@ -6,24 +6,24 @@
 }
 .brand-logo__sheen {
   position: absolute; left: 0; top: -40%; width: 35%; height: 180%; opacity: 0;
-  background: linear-gradient(108deg, transparent 22%, rgba(167,223,255,.08) 38%, rgba(167,223,255,.5) 46%, #fff 50%, rgba(69,184,255,.28) 54%, transparent 68%);
+  background: linear-gradient(108deg, transparent 22%, rgba(59,98,155,.08) 38%, rgba(59,98,155,.5) 46%, #fff 50%, rgba(43,76,126,.28) 54%, transparent 68%);
   will-change: transform, opacity;
 }
 .brand-logo__traveler {
   position: absolute; left: 0; top: 0; width: 18%; height: 54%; opacity: 0;
-  background: radial-gradient(ellipse at center, white 0%, rgba(167,223,255,.9) 2%, rgba(69,184,255,.24) 12%, transparent 45%),
-    radial-gradient(ellipse 50% 2% at center, rgba(255,255,255,.8), rgba(167,223,255,.25) 35%, transparent 100%);
+  background: radial-gradient(ellipse at center, white 0%, rgba(59,98,155,.9) 2%, rgba(43,76,126,.24) 12%, transparent 45%),
+    radial-gradient(ellipse 50% 2% at center, rgba(255,255,255,.8), rgba(59,98,155,.25) 35%, transparent 100%);
   will-change: transform, opacity;
 }
 .brand-logo__bloom {
   position: absolute; left: var(--logo-flare-x); top: var(--logo-flare-y); width: 25%; height: 75%; opacity: 0;
-  background: radial-gradient(ellipse 18% 22% at center, white, rgba(167,223,255,.7) 10%, rgba(69,184,255,.15) 48%, transparent 100%),
-    radial-gradient(ellipse 50% 1.3% at center, white, rgba(167,223,255,.7) 25%, transparent 100%),
-    radial-gradient(ellipse 1% 28% at center, rgba(255,255,255,.8), rgba(167,223,255,.35) 25%, transparent 100%);
+  background: radial-gradient(ellipse 18% 22% at center, white, rgba(59,98,155,.7) 10%, rgba(43,76,126,.15) 48%, transparent 100%),
+    radial-gradient(ellipse 50% 1.3% at center, white, rgba(59,98,155,.7) 25%, transparent 100%),
+    radial-gradient(ellipse 1% 28% at center, rgba(255,255,255,.8), rgba(59,98,155,.35) 25%, transparent 100%);
   will-change: transform, opacity;
 }
 .brand-logo__glass {
   position: absolute; left: 60.5%; top: 33.5%; width: 15%; height: 43%; border-radius: 50%; opacity: 0;
-  background: conic-gradient(from -45deg, transparent, #a7dfff, #45b8ff, transparent, #a78bfa, transparent);
+  background: conic-gradient(from -45deg, transparent, #3B629B, #2B4C7E, transparent, #1E365D, transparent);
   mask-image: radial-gradient(ellipse, black 10%, transparent 72%);
 }

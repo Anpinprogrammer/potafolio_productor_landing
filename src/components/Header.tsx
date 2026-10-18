@@ -80,7 +80,7 @@ export default function Header({ logoRef, hideLogo = false }: { logoRef?: Ref<HT
 
   return (
     <>
-      <header ref={headerRef} className={`fixed inset-x-0 top-0 z-[60] transition duration-300 ${solid || open ? "bg-ink/90 backdrop-blur border-b border-white/10" : ""}`}>
+      <header ref={headerRef} className={`fixed inset-x-0 top-0 z-[60] transition-all duration-300 ${solid || open ? "bg-ink/90 backdrop-blur border-b border-zinc-800 hover:border-brand/50" : ""}`}>
         <div className="wrap flex h-16 items-center justify-between">
           <Link to="/#inicio" className="flex items-center font-bold text-white" aria-label="Yamamoto, inicio" style={{ opacity: hideLogo ? 0 : 1 }}>
             {/* El archivo trae aire transparente alrededor (el logotipo ocupa el 63% del alto),
@@ -92,18 +92,18 @@ export default function Header({ logoRef, hideLogo = false }: { logoRef?: Ref<HT
               const active = activeSection === href;
               return (
                 <Link key={href} to={!isHome && href === "#portafolio" ? "/proyectos" : `/${href}`} aria-current={active ? "location" : undefined}
-                  className={`group relative py-2 transition-colors duration-300 focus-visible:rounded-sm ${active ? "text-white" : "text-slate-300 hover:text-white"}`}>
+                  className={`group relative py-2 transition-colors duration-300 focus-visible:rounded-sm ${active ? "text-brand" : "text-slate-300 hover:text-white"}`}>
                   {label}
                   <span aria-hidden="true"
-                    className={`pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-center rounded-full bg-gradient-to-r from-white/40 via-white to-white/40 shadow-[0_2px_10px_rgba(255,255,255,0.2)] transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none ${active ? "scale-x-100 opacity-100" : "scale-x-50 opacity-0 group-hover:scale-x-75 group-hover:opacity-40"}`} />
+                    className={`pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-center rounded-full bg-brand shadow-[0_2px_10px_rgba(43,76,126,0.2)] transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none ${active ? "scale-x-100 opacity-100" : "scale-x-50 opacity-0 group-hover:scale-x-75 group-hover:opacity-40"}`} />
                 </Link>
               );
             })}
           </nav>
-          <Link to="/#contacto" className="btn-ghost hidden md:inline-flex">Trabajemos juntos</Link>
+          <Link to="/#contacto" className="btn-primary hidden md:inline-flex">Trabajemos juntos</Link>
           <button type="button" onClick={() => setOpen(!open)}
             aria-label={open ? "Cerrar menú" : "Abrir menú"} aria-expanded={open}
-            className="-mr-2 grid h-11 w-11 place-items-center rounded-full bg-brand text-white transition-colors duration-300 active:bg-brand2 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-brand2 md:hidden">
+            className="-mr-2 grid h-11 w-11 place-items-center rounded-full bg-brand text-white transition-colors duration-300 active:bg-[#3B629B] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-[#3B629B] md:hidden">
             {open ? <X size={22} aria-hidden /> : <Menu size={22} aria-hidden />}
           </button>
         </div>
@@ -118,7 +118,7 @@ export default function Header({ logoRef, hideLogo = false }: { logoRef?: Ref<HT
               {nav.map(([l, h], i) => (
                 <li key={h} className="animate-modalin" style={{ animationDelay: `${0.05 * i}s` }}>
                   <Link to={!isHome && h === "#portafolio" ? "/proyectos" : `/${h}`} aria-current={activeSection === h ? "location" : undefined} onClick={() => setOpen(false)}
-                    className="text-2xl font-extrabold tracking-tight text-white transition duration-300 hover:text-brand active:text-brand">
+                    className={`text-2xl font-extrabold tracking-tight transition duration-300 hover:text-brand active:text-brand ${activeSection === h ? "text-brand" : "text-white"}`}>
                     {l}
                   </Link>
                 </li>

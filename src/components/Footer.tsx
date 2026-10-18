@@ -22,7 +22,7 @@ const socialLinks = [
   { label: "WhatsApp", href: `https://wa.me/${PHONE}?text=${encodeURIComponent(MESSAGE)}`, icon: WhatsAppIcon },
 ];
 
-const linkClassName = "rounded-sm transition-colors hover:text-white focus-visible:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none";
+const linkClassName = "rounded-sm text-zinc-400 transition-colors duration-300 hover:text-brand focus-visible:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand motion-reduce:transition-none";
 
 export default function Footer() {
   const scrollToTop = () => {
@@ -31,10 +31,10 @@ export default function Footer() {
   };
 
   return (
-    <footer className="border-t border-zinc-800/80 bg-ink py-10 text-sm text-zinc-400 lg:py-12">
+    <footer className="border-t border-zinc-800/80 bg-ink py-10 text-sm text-zinc-400 md:border-zinc-800/60 md:pb-8 md:pt-12">
       <div className="wrap">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-12">
-          <div className="min-w-0">
+        <div className="flex flex-col lg:flex-row items-start gap-6 md:gap-8">
+          <div className="flex-1 min-w-0">
             <Link to="/#inicio" aria-label="Yamamoto, inicio" className={`inline-block ${linkClassName}`}>
               <BrandLogo className="h-12 w-auto lg:h-14" />
             </Link>
@@ -43,30 +43,34 @@ export default function Footer() {
             </p>
           </div>
 
-          <nav aria-labelledby="footer-navigation-title">
-            <h2 id="footer-navigation-title" className="mb-3 text-xs font-semibold tracking-wider text-zinc-500">NAVEGACIÓN</h2>
-            <ul className="flex flex-col items-start gap-3">
-              {nav.filter(([, href]) => href !== "#proceso").map(([label, href]) => (
-                <li key={href}>
-                  <Link to={`/${href}`} className={linkClassName}>{label}</Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <div className="flex flex-1 justify-between flex-col md:flex-row gap-6 md:gap-0">
+            <div className="flex-1">
+              <nav aria-labelledby="footer-navigation-title">
+                <h2 id="footer-navigation-title" className="mb-3 text-xs font-semibold tracking-wider text-zinc-500">NAVEGACIÓN</h2>
+                <ul className="flex flex-col items-start gap-3">
+                  {nav.filter(([, href]) => href !== "#proceso").map(([label, href]) => (
+                    <li key={href}>
+                      <Link to={`/${href}`} className={linkClassName}>{label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
 
-          <div className="min-w-0">
-            <h2 id="footer-social-title" className="mb-3 text-xs font-semibold tracking-wider text-zinc-500">SÍGUEME</h2>
+          <div className="min-w-0 flex-1">
+            <h2 id="footer-social-title" className="mb-1 md:mb-3 text-xs font-semibold tracking-wider text-zinc-500">SÍGUEME</h2>
             <ul aria-labelledby="footer-social-title" className="flex flex-wrap gap-2">
               {socialLinks.map(({ label, href, icon: Icon }) => (
                 <li key={label}>
                   <a href={href} target="_blank" rel="noopener noreferrer" title={label}
                     aria-label={`${label} (abre en una pestaña nueva)`}
-                    className={`inline-flex h-11 w-11 items-center justify-center ${linkClassName}`}>
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-sm text-zinc-400 transition-all duration-300 hover:text-brand focus-visible:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand motion-reduce:transition-none md:rounded-full md:border md:border-zinc-800 md:bg-zinc-900/80 md:p-2.5 md:hover:border-brand md:hover:bg-brand/20 md:hover:text-white md:focus-visible:border-brand md:focus-visible:bg-brand/20 md:focus-visible:text-white">
                     <span aria-hidden="true"><Icon className="h-5 w-5" /></span>
                   </a>
                 </li>
               ))}
             </ul>
+          </div>
           </div>
         </div>
 

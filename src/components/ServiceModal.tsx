@@ -78,7 +78,7 @@ export default function ServiceModal({ service, opener, onDismiss }: Props) {
             <h2 id={`${id}-title`} className="text-2xl font-bold leading-tight tracking-tight sm:text-3xl">{title}</h2>
           </div>
           <button type="button" autoFocus onClick={() => close()} aria-label="Cerrar detalles del servicio"
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/15 text-zinc-300 transition-colors hover:bg-white/10 hover:text-white">
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/15 text-zinc-300 transition-colors hover:border-brand hover:bg-brand/10 hover:text-brand">
             <X size={22} aria-hidden />
           </button>
         </div>
@@ -99,11 +99,11 @@ export default function ServiceModal({ service, opener, onDismiss }: Props) {
               </div>
             )}
             {video && loading && !failed && !closing && <div role="status" className="pointer-events-none absolute inset-0 grid place-content-center gap-3 bg-zinc-950/80 text-center text-sm text-zinc-300">
-              <LoaderCircle size={28} aria-hidden className="mx-auto animate-spin text-emerald-400 motion-reduce:animate-none" />
+              <LoaderCircle size={28} aria-hidden className="mx-auto animate-spin text-brand motion-reduce:animate-none" />
               Cargando demostración…
             </div>}
           </div>
-          {video && <a href={video.originalUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-2 text-xs text-zinc-400 underline underline-offset-4 hover:text-emerald-300">
+          {video && <a href={video.originalUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-2 text-xs text-zinc-400 underline underline-offset-4 hover:text-brand">
             Abrir en {video.provider} <ExternalLink size={13} aria-hidden />
           </a>}
           {video && startMuted && <p className="mt-2 text-xs leading-relaxed text-zinc-400">El video inicia sin sonido. Actívalo en los controles del reproductor.</p>}

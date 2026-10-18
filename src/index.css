@@ -10,8 +10,14 @@ body { @apply bg-ink text-slate-200 font-sans antialiased; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *{animation:none!important} }
 @layer components {
   .btn { @apply inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition duration-300 hover:-translate-y-0.5; }
-  .btn-primary { @apply btn bg-gradient-to-r from-brand to-brand2 text-white shadow-lg shadow-brand/30 hover:shadow-brand/50; }
-  .btn-ghost { @apply btn border border-white/20 text-white hover:bg-white/10; }
+  .btn-primary { @apply btn border border-blue-400/30 bg-brand text-white font-bold shadow-md shadow-slate-900/10 transition-all duration-300 hover:bg-[#3B629B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand active:translate-y-0 motion-reduce:transform-none motion-reduce:transition-none; }
+  .text-lens { @apply text-blue-400; }
+  .btn-secondary { @apply btn border border-zinc-700 bg-transparent text-zinc-200 font-semibold backdrop-blur-md hover:border-brand hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand motion-reduce:transform-none motion-reduce:transition-none; }
+  .btn-ghost { @apply btn border border-zinc-700 bg-transparent text-zinc-200 font-semibold backdrop-blur-md hover:border-brand hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand motion-reduce:transform-none motion-reduce:transition-none; }
+  .btn-primary-light { @apply btn-primary border-brand hover:bg-[#1E365D]; }
+  .btn-secondary-light { @apply btn border-2 border-brand bg-transparent text-brand font-semibold hover:bg-brand hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand motion-reduce:transform-none motion-reduce:transition-none; }
+  .cta-pill { @apply min-h-14 justify-between gap-5 py-2 pl-6 pr-2; }
+  .cta-icon { @apply inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/20 p-2 text-white transition-colors duration-300 group-hover:bg-white/25 group-focus-visible:bg-white/25 motion-reduce:transition-none; }
   .card { @apply rounded-2xl border border-white/10 bg-panel/70 p-5 backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-brand/50; }
   .wrap { @apply mx-auto max-w-6xl px-5 2xl:max-w-7xl 2xl:px-8; }
 }

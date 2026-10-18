@@ -6,7 +6,7 @@ import "./TestimonialsCarousel.css";
 
 function ReviewAvatar({ name }: { name: string }) {
   return (
-    <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-emerald-800/50 bg-emerald-950/60 font-semibold text-emerald-400">
+    <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-brand/50 bg-brand/30 font-semibold text-blue-400">
       {Array.from(name.trim())[0]?.toLocaleUpperCase("es")}
     </span>
   );
@@ -30,7 +30,7 @@ export default function TestimonialsCarousel() {
                   <li key={review.n} className="testimonials-carousel__item">
                     <figure className="flex h-full flex-col rounded-2xl border border-zinc-800 bg-panel/70 p-5 backdrop-blur transition-all duration-300 hover:-translate-y-1 motion-reduce:transform-none motion-reduce:transition-none">
                       <Quote className="text-brand" size={20} aria-hidden="true" />
-                      <span className="mt-3 flex gap-1 text-amber-400" role="img" aria-label="5 de 5 estrellas">
+                      <span className="mt-3 flex gap-1 text-brand" role="img" aria-label="5 de 5 estrellas">
                         {Array.from({ length: 5 }, (_, i) => <Star key={i} size={14} fill="currentColor" aria-hidden="true" />)}
                       </span>
                       <blockquote className="mt-3 text-sm leading-relaxed text-zinc-200">{review.q}</blockquote>
@@ -52,8 +52,8 @@ export default function TestimonialsCarousel() {
       <div className="mt-3 flex justify-end motion-reduce:hidden">
         <button type="button" onClick={() => setPaused(!paused)} aria-pressed={paused}
           aria-label={paused ? "Reanudar carrusel de reseñas" : "Pausar carrusel de reseñas"}
-          className="inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-xs text-zinc-300 transition-colors hover:bg-white/5 hover:text-white">
-          {paused ? <Play size={14} aria-hidden="true" /> : <Pause size={14} aria-hidden="true" />}
+          className="inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-xs text-zinc-300 transition-colors border border-zinc-700 hover:border-brand hover:bg-brand/10 hover:text-white">
+          {paused ? <Play size={14} className="text-brand" aria-hidden="true" /> : <Pause size={14} className="text-brand" aria-hidden="true" />}
           {paused ? "Reanudar" : "Pausar para leer"}
         </button>
       </div>

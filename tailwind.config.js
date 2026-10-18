@@ -2,7 +2,7 @@
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: { extend: {
-    colors: { ink: "#010204", navy: "#070c1c", panel: "#111936", brand: "#146B3A", brand2: "#0B3D2E" },
+    colors: { ink: "#010204", navy: "#070c1c", panel: "#111936", brand: "#2B4C7E", brand2: "#1B365D" },
     screens: { "3xl": "1920px" },
     fontFamily: { sans: ["Inter", "system-ui", "sans-serif"], script: ["Caveat", "cursive"] },
     keyframes: {
