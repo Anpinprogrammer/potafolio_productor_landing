@@ -33,7 +33,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-zinc-800/80 bg-ink py-10 text-sm text-zinc-400 md:border-zinc-800/60 md:pb-8 md:pt-12">
       <div className="wrap">
-        <div className="flex flex-col lg:flex-row items-start gap-6 md:gap-8">
+        <div className="flex flex-col lg:flex-row items-start gap-8">
           <div className="flex-1 min-w-0">
             <Link to="/#inicio" aria-label="Yamamoto, inicio" className={`inline-block ${linkClassName}`}>
               <BrandLogo className="h-12 w-auto lg:h-14" />
@@ -43,7 +43,7 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="flex flex-1 justify-between flex-col md:flex-row gap-6 md:gap-0">
+          <div className="flex flex-1 justify-between flex-col md:flex-row gap-8 md:gap-0">
             <div className="flex-1">
               <nav aria-labelledby="footer-navigation-title">
                 <h2 id="footer-navigation-title" className="mb-3 text-xs font-semibold tracking-wider text-zinc-500">NAVEGACIÓN</h2>
@@ -74,7 +74,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-start justify-between gap-4 border-t border-zinc-900 pt-6 sm:flex-row sm:items-center">
+        <div className="mt-4 md:mt-8 flex flex-col items-start justify-between gap-4 border-t border-zinc-900 pt-6 sm:flex-row sm:items-center">
           <p className="text-sm text-zinc-500">© 2026 Yamamoto. Todos los derechos reservados.</p>
           <button type="button" onClick={scrollToTop} className={`shrink-0 text-sm text-zinc-400 ${linkClassName}`}>
             Volver arriba ↑

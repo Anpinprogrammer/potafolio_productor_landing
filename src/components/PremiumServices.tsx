@@ -72,8 +72,7 @@ function ServiceCard({ s, clone, onPlay }: { s: Service; clone?: boolean; onPlay
               title={s.video ? undefined : "Video no disponible"}
               onClick={(e) => onPlay(s, e.currentTarget)}
               aria-label={s.video ? `Reproducir el video de ${s.title}` : `Video no disponible para ${s.title}`}
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-brand disabled:cursor-default disabled:opacity-40 text-white ring-1 ring-blue-400/30 backdrop-blur-md transition duration-300 hover:scale-105 hover:bg-[#3B629B] focus-visible:bg-[#3B629B] group-hover:scale-105 group-hover:bg-[#3B629B] motion-reduce:transition-none"
-              style={{ boxShadow: `0 0 0 6px ${rgba(BRAND, 0.13)}, 0 12px 30px -10px ${rgba(BRAND, 0.7)}` }}>
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white text-brand ring-1 ring-white/70 shadow-[0_0_0_6px_rgba(255,255,255,0.15),0_12px_30px_-10px_rgba(0,0,0,0.6)] disabled:cursor-default disabled:opacity-40 transition duration-300 hover:scale-105 hover:bg-slate-100 focus-visible:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white group-hover:scale-105 group-hover:bg-slate-100 motion-reduce:transition-none">
               <Play size={15} fill="currentColor" aria-hidden className="translate-x-[1px]" />
             </button>
           </div>
