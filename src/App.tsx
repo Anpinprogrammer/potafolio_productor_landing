@@ -64,7 +64,7 @@ export default function App() {
   }, [pathname, hash, navigationKey, introActive]);
 
   useEffect(() => {
-    document.title = pathname === "/proyectos" ? "Todos los proyectos · Yamamoto" : "Yamamoto · Producción audiovisual";
+    document.title = ["/proyectos", "/portafolio"].includes(pathname) ? "Todos los proyectos · Yamamoto" : "Yamamoto · Producción audiovisual";
   }, [pathname]);
 
   return (<>
@@ -74,6 +74,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<><Hero /><PremiumServices /><Services /><About /><Process /><Testimonials /><Contact /></>} />
           <Route path="/proyectos" element={<ProjectsPage />} />
+          <Route path="/portafolio" element={<ProjectsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

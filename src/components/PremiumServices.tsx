@@ -102,10 +102,50 @@ function ServiceCard({ s, clone, onPlay }: { s: Service; clone?: boolean; onPlay
 
 type Collection = "featured" | "all";
 
-export default function PremiumServices({ collection = "featured" }: { collection?: Collection }) {
+export default function PremiumServices({ collection = "featured", category = "Todos" }: { collection?: Collection; category?: string }) {
   const { projects, loading, error, retry } = usePortfolioProjects({ featuredOnly: collection === "featured" });
   const cards = useMemo(() => toPortfolioCards(projects, premiumServices), [projects]);
-  return <PremiumServicesContent key={`${collection}:${cards.map((card) => card.id).join(",")}`} collection={collection} cards={cards} loading={loading} error={error} onRetry={retry} />;
+  const [pageSize, setPageSize] = useState(() => window.matchMedia("(max-width: 767px)").matches ? 4 : 6);
+  const [pagination, setPagination] = useState({ category, pageSize, page: 1 });
+  if (pagination.category !== category || pagination.pageSize !== pageSize) {
+    setPagination({ category, pageSize, page: 1 });
+  }
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 767px)");
+    const update = () => setPageSize(media.matches ? 4 : 6);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  const filtered = cards.filter((card) => {
+    if (collection !== "all" || category === "Todos") return true;
+    const value = card.category.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    if (category === "Comerciales") return /comercial|anuncio|publicidad|promo/.test(value);
+    if (category === "Reels & TikTok") return /reel|tiktok|redes|social|short/.test(value);
+    if (category === "YouTube") return /youtube/.test(value);
+    return /documental|viaje|historia|cinematograf/.test(value);
+  });
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const page = Math.min(pagination.page, totalPages);
+  const visible = collection === "all" ? filtered.slice((page - 1) * pageSize, page * pageSize) : filtered;
+  const changePage = (next: number) => {
+    setPagination({ category, pageSize, page: next });
+    document.getElementById("portafolio")?.scrollIntoView({ block: "start", behavior: "instant" });
+  };
+  const paginationButton = "border-2 border-[#2B4C7E] text-white hover:bg-[#2B4C7E] font-semibold px-5 py-3 rounded-full transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent";
+  return <>
+    <PremiumServicesContent key={`${collection}:${category}:${pageSize}:${page}:${cards.map((card) => card.id).join(",")}`} collection={collection} cards={visible} loading={loading} error={error} onRetry={retry} />
+    {collection === "all" && !loading && !error && totalPages > 1 && (
+      <nav aria-label="Paginación de proyectos" className="wrap my-12 flex flex-wrap items-center justify-center gap-3">
+        <button type="button" disabled={page === 1} onClick={() => changePage(page - 1)} className={paginationButton}>
+          Anterior
+        </button>
+        <span role="status" className="text-sm text-zinc-400">Página {page} de {totalPages}</span>
+        <button type="button" disabled={page === totalPages} onClick={() => changePage(page + 1)} className={paginationButton}>
+          Siguiente
+        </button>
+      </nav>
+    )}
+  </>;
 }
 
 function PremiumServicesContent({ cards, loading, error, onRetry, collection }: {
@@ -303,7 +343,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
 
   return (
     <section id="portafolio" aria-label={collection === "all" ? "Todos los proyectos del portafolio" : "Proyectos destacados"} aria-busy={loading}
-      className={`relative overflow-hidden ${collection === "all" ? "pb-20 pt-8" : "bg-[#0A0A0C] py-12 lg:py-20"}`}>
+      className={`relative overflow-hidden ${collection === "all" ? "scroll-mt-28 pb-8 pt-8" : "bg-[#0A0A0C] py-12 lg:py-20"}`}>
       {collection === "featured" && <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />}
       {collection === "featured" && <div aria-hidden="true" className="pointer-events-none absolute -top-10 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-brand/[0.15] blur-[120px]" />}
       {/* Ambiente: halos de color + grano */}
@@ -360,7 +400,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
               }}
               className={collection === "all" ? "relative" : "relative mx-auto max-w-[27rem] overflow-hidden sm:max-w-none sm:overflow-visible"}>
             <ul
-              className={collection === "all" ? "grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3" : carousel ? "flex" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"}
+              className={collection === "all" ? "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8" : carousel ? "flex" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"}
               style={carousel && n > 1 ? {
                 userSelect: "none",
                 transform: `translateX(calc(-${pos * 100}% + ${dragOffset}px))`,
