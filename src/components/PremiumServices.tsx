@@ -326,7 +326,7 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
               Una selección de mis proyectos destacados: del viaje que inspira al anuncio que convierte. Dirección, edición y color con acabado de cine.
             </p>
           </Reveal>
-          <Reveal dir="left" delay={150} className="shrink-0">
+          <Reveal dir="left" delay={150} className="hidden shrink-0 lg:flex">
             <Link to="/proyectos" className="btn-ghost">Ver todos los proyectos <ArrowRight size={16} /></Link>
           </Reveal>
         </div>}
@@ -406,6 +406,11 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
             </div>
           )}
         </div>
+        {collection === "featured" && (
+          <div className="block lg:hidden mt-8 text-center">
+            <Link to="/proyectos" className="btn-ghost">Ver todos los proyectos <ArrowRight size={16} /></Link>
+          </div>
+        )}
       </div>
 
       {/* Ventana de reproducción: centrada, por encima de todo (z-100 > header z-50) */}
