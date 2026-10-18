@@ -32,7 +32,7 @@ export default function ProjectsPage() {
           </Link>
         </div>
       </div>
-      <div className="wrap pt-20">
+      <div className="wrap pt-12 md:pt-16 lg:pt-20">
         <div className="pb-8">
           <SectionBadge text="Portafolio completo" theme="dark" />
           <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-white md:text-4xl lg:text-5xl">
