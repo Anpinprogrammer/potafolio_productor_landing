@@ -114,7 +114,7 @@ export const Services = () => {
               {error && !loading && <button type="button" onClick={retry} className="btn-primary-light">Volver a intentar</button>}
             </div>
           )}
-          <ul className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:grid lg:auto-rows-fr lg:grid-cols-3 lg:overflow-visible lg:pb-0">
+          <ul className="flex snap-x snap-mandatory gap-2 md:gap-6 overflow-x-auto pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:grid lg:auto-rows-fr lg:grid-cols-3 lg:overflow-visible lg:pb-0">
             {services.map((service, i) => {
               const { _id, icon, title, description } = service;
               const Icon = getServiceIcon(icon);
