@@ -38,11 +38,11 @@ export const Hero = () => {
 
   return (
   <section id="inicio" className="relative overflow-hidden">
+  {/* Imagen y velo a todo el ancho de la pantalla; solo el contenido respeta el ancho máximo */}
+  <img ref={imageRef} src="/images/hero.webp" alt="Editor de video trabajando en su laptop dentro de un estudio con paneles acústicos y cámaras" width={1350} height={1800} fetchPriority="high" decoding="async"
+    className={`hero-image ${imageReady ? "hero-image--ready" : ""} absolute inset-y-0 right-0 h-full w-full object-cover object-[60%_45%] md:w-3/5 [mask-image:linear-gradient(to_left,black_55%,transparent)]`} />
+  <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-transparent" />
   <div className="relative mx-auto flex min-h-screen max-w-[1800px] flex-col pt-16 max-sm:min-h-svh">
-    <img ref={imageRef} src="/images/hero.webp" alt="Editor de video trabajando en su laptop dentro de un estudio con paneles acústicos y cámaras" width={1350} height={1800} fetchPriority="high" decoding="async"
-      className={`hero-image ${imageReady ? "hero-image--ready" : ""} absolute inset-y-0 right-0 h-full w-full object-cover object-[60%_45%] md:w-3/5 [mask-image:linear-gradient(to_left,black_55%,transparent)]`} />
-    <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-transparent" />
-    <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-ink to-transparent max-[1800px]:hidden" />
     <div className="wrap relative z-10 my-auto w-full text-slate-50 max-sm:my-0 max-sm:flex max-sm:flex-1 max-sm:py-6 sm:py-14 md:py-16">
       <div className="max-w-xl lg:max-w-3xl flex flex-col max-sm:w-full max-sm:justify-between">
         <div>

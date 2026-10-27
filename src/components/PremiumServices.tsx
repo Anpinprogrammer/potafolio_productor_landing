@@ -15,6 +15,8 @@ import { getAutoplayUrl, shouldStartMuted } from "../lib/videoAutoplay";
 const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E\")";
 const BRAND = "#2B4C7E";
 const MOBILE = "(max-width: 639px)";
+const DESKTOP = "(min-width: 1024px)";
+const PER_VIEW = 4; // cards visibles a la vez en el carrusel de escritorio
 const DURATION = 450; // ms de la transición del carrusel
 // EXIT debe coincidir con la duración de la animación `modalout` en tailwind.config.js
 const EXIT = 260;     // ms que se espera antes de desmontar el reproductor
@@ -154,6 +156,12 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
   const n = cards.length;
   const [mobile, setMobile] = useState(() => window.matchMedia(MOBILE).matches);
   const carousel = mobile && collection === "featured";
+  const [desktop, setDesktop] = useState(() => window.matchMedia(DESKTOP).matches);
+  // Escritorio: carrusel de 4 cards que avanza de una en una, solo si hay más de 4
+  const deskCarousel = desktop && collection === "featured" && n > PER_VIEW;
+  const [deskIndex, setDeskIndex] = useState(0);
+  const deskMax = Math.max(0, n - PER_VIEW);
+  const deskFirst = Math.min(deskIndex, deskMax);
   const [reduce] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   // pos: 1..n = cards reales; 0 y n+1 = clones (para el salto continuo)
   const [pos, setPos] = useState(1);
@@ -171,9 +179,12 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
 
   useEffect(() => {
     const mq = window.matchMedia(MOBILE);
+    const dq = window.matchMedia(DESKTOP);
     const f = () => setMobile(mq.matches);
+    const g = () => setDesktop(dq.matches);
     mq.addEventListener("change", f);
-    return () => mq.removeEventListener("change", f);
+    dq.addEventListener("change", g);
+    return () => { mq.removeEventListener("change", f); dq.removeEventListener("change", g); };
   }, []);
 
   const apply = (p: number) => { posRef.current = p; setPos(p); };
@@ -372,7 +383,8 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
         </div>}
 
         {/* Galería: grid en desktop, carrusel infinito de 1 card en móvil */}
-        <div className={`relative ${collection === "featured" ? "mt-12" : ""}`}>
+        {/* Entre lg y xl no hay margen lateral suficiente: se reserva un carril para las flechas */}
+        <div className={`relative ${collection === "featured" ? "mt-12" : ""} ${deskCarousel ? "lg:px-14 xl:px-0" : ""}`}>
           {!n && (
             <div className="flex min-h-64 flex-col items-center justify-center gap-4 text-center text-sm text-slate-400" role={error ? "alert" : "status"}>
               <p>{loading ? "Cargando proyectos…" : error ? "No pudimos cargar los proyectos." : collection === "featured" ? "Pronto encontrarás nuevos proyectos destacados aquí." : "Pronto encontrarás nuevos proyectos aquí."}</p>
@@ -398,22 +410,28 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
                   event.stopPropagation();
                 }
               }}
-              className={collection === "all" ? "relative" : "relative mx-auto max-w-[27rem] overflow-hidden sm:max-w-none sm:overflow-visible"}>
+              className={collection === "all" ? "relative" : `relative mx-auto max-w-[27rem] overflow-hidden sm:max-w-none sm:overflow-visible ${deskCarousel ? "lg:overflow-x-clip" : ""}`}>
             <ul
-              className={collection === "all" ? "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8" : carousel ? "flex" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"}
+              className={collection === "all" ? "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8" : carousel ? "flex" : deskCarousel ? "flex gap-6" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"}
               style={carousel && n > 1 ? {
                 userSelect: "none",
                 transform: `translateX(calc(-${pos * 100}% + ${dragOffset}px))`,
                 transitionProperty: "transform",
                 transitionTimingFunction: "ease-out",
                 transitionDuration: animate && dragOffset === 0 ? `${ms}ms` : "0ms",
+              } : deskCarousel ? {
+                // Cada paso desplaza el ancho de una card (25% menos los 3 gaps de 1.5rem) más un gap
+                transform: `translateX(calc(-${deskFirst} * ((100% - ${(PER_VIEW - 1) * 1.5}rem) / ${PER_VIEW} + 1.5rem)))`,
+                transition: `transform ${ms}ms ease-out`,
               } : undefined}>
               {slides.map((s, k) => {
                 const clone = carousel && n > 1 && (k === 0 || k === slides.length - 1);
+                const offscreen = deskCarousel && (k < deskFirst || k >= deskFirst + PER_VIEW);
                 return (
-                  <li key={`${s.id}-${k}`} aria-hidden={clone || undefined} className={carousel ? "h-auto w-full shrink-0 px-11" : "min-w-0"}>
+                  <li key={`${s.id}-${k}`} aria-hidden={clone || offscreen || undefined}
+                    className={carousel ? "h-auto w-full shrink-0 px-11" : deskCarousel ? "w-[calc((100%_-_4.5rem)/4)] shrink-0" : "min-w-0"}>
                     <Reveal delay={collection === "all" ? (k % 3) * 90 : (k % n) * 110} className="h-full">
-                      <ServiceCard s={s} clone={clone} onPlay={openVideo} />
+                      <ServiceCard s={s} clone={clone || offscreen} onPlay={openVideo} />
                     </Reveal>
                   </li>
                 );
@@ -434,6 +452,20 @@ function PremiumServicesContent({ cards, loading, error, onRetry, collection }: 
               </>
             )}
           </div>
+
+          {/* Flechas de escritorio: solo aparecen si hay más cards en esa dirección */}
+          {deskCarousel && deskFirst > 0 && (
+            <button type="button" onClick={() => setDeskIndex(deskFirst - 1)} aria-label="Ver proyectos anteriores"
+              className="absolute left-0 xl:-left-14 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-brand text-white ring-1 ring-blue-400/30 shadow-[0_12px_30px_-10px_rgba(0,0,0,0.8)] transition duration-300 hover:bg-[#3B629B] active:scale-90 motion-reduce:transition-none">
+              <ChevronLeft size={20} aria-hidden />
+            </button>
+          )}
+          {deskCarousel && deskFirst < deskMax && (
+            <button type="button" onClick={() => setDeskIndex(deskFirst + 1)} aria-label="Ver más proyectos"
+              className="absolute right-0 xl:-right-14 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-brand text-white ring-1 ring-blue-400/30 shadow-[0_12px_30px_-10px_rgba(0,0,0,0.8)] transition duration-300 hover:bg-[#3B629B] active:scale-90 motion-reduce:transition-none">
+              <ChevronRight size={20} aria-hidden />
+            </button>
+          )}
 
           {/* Indicador de posición (solo móvil) */}
           {carousel && n > 1 && (
